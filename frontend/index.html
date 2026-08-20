@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TouristSafe - Smart Tourist Safety Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-primary-fixed": "#0d1c32",
+                            "on-secondary-container": "#57657a",
+                            "surface": "#fbf9fb",
+                            "inverse-primary": "#b9c7e4",
+                            "secondary-fixed": "#d5e3fc",
+                            "on-tertiary-fixed-variant": "#5d4124",
+                            "on-primary-fixed-variant": "#39475f",
+                            "tertiary-fixed-dim": "#e7bf99",
+                            "surface-container-lowest": "#ffffff",
+                            "primary-container": "#0d1c32",
+                            "surface-container-low": "#f5f3f5",
+                            "secondary-fixed-dim": "#b9c7df",
+                            "secondary": "#515f74",
+                            "outline": "#75777e",
+                            "surface-dim": "#dbd9db",
+                            "on-background": "#1b1b1d",
+                            "inverse-on-surface": "#f2f0f2",
+                            "on-tertiary-container": "#9f7d5b",
+                            "surface-tint": "#515f78",
+                            "on-error-container": "#93000a",
+                            "on-surface-variant": "#44474d",
+                            "secondary-container": "#d5e3fc",
+                            "on-error": "#ffffff",
+                            "on-tertiary": "#ffffff",
+                            "tertiary-container": "#2b1701",
+                            "primary-fixed-dim": "#b9c7e4",
+                            "on-secondary-fixed": "#0d1c2e",
+                            "surface-container-highest": "#e4e2e4",
+                            "primary-fixed": "#d6e3ff",
+                            "on-primary": "#ffffff",
+                            "tertiary": "#000000",
+                            "error": "#ba1a1a",
+                            "on-tertiary-fixed": "#2b1701",
+                            "surface-container": "#efedef",
+                            "on-surface": "#1b1b1d",
+                            "surface-bright": "#fbf9fb",
+                            "inverse-surface": "#303032",
+                            "on-secondary": "#ffffff",
+                            "background": "#fbf9fb",
+                            "surface-variant": "#e4e2e4",
+                            "tertiary-fixed": "#ffdcbd",
+                            "on-secondary-fixed-variant": "#3a485b",
+                            "outline-variant": "#c5c6cd",
+                            "surface-container-high": "#eae7ea",
+                            "error-container": "#ffdad6",
+                            "on-primary-container": "#76849f",
+                            "primary": "#000000"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.125rem",
+                            "lg": "0.25rem",
+                            "xl": "0.5rem",
+                            "full": "0.75rem"
+                    },
+                    "spacing": {
+                            "md": "16px",
+                            "grid-gutter": "16px",
+                            "lg": "24px",
+                            "xl": "32px",
+                            "sm": "8px",
+                            "base": "4px",
+                            "xs": "4px",
+                            "grid-margin": "24px"
+                    },
+                    "fontFamily": {
+                            "body-md": ["Inter"],
+                            "label-md": ["Inter"],
+                            "title-lg": ["Inter"],
+                            "headline-lg": ["Plus Jakarta Sans"],
+                            "body-lg": ["Inter"],
+                            "headline-lg-mobile": ["Plus Jakarta Sans"],
+                            "display-lg": ["Plus Jakarta Sans"],
+                            "data-mono": ["Inter"],
+                            "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                            "title-lg": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- Top Navigation Bar -->
+<nav class="bg-surface dark:bg-inverse-surface fixed top-0 w-full z-50 border-b border-outline/20 bg-surface/90 backdrop-blur-md h-[64px]">
+<div class="flex justify-between items-center px-grid-margin h-16 w-full max-w-7xl mx-auto">
+<!-- Branding -->
+<div class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed flex items-center gap-2">
+<span class="material-symbols-outlined filled text-primary">security</span>
+                TouristSafe
+            </div>
+<!-- Navigation Links -->
+<div class="hidden md:flex gap-6 items-center h-full">
+<a class="h-full flex items-center text-primary dark:text-primary-fixed font-bold border-b-2 border-primary text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-80 transition-all duration-200" href="#">Home</a>
+<a class="h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">How It Works</a>
+<a class="h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Features</a>
+<a class="h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">About</a>
+</div>
+<!-- Trailing Action -->
+<div class="flex items-center">
+<a class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-on-primary-fixed transition-colors" href="#">
+                    Authority Dashboard
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="pt-[120px] pb-xl px-grid-margin max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg items-center">
+<div class="md:col-span-6 flex flex-col gap-md">
+<div class="inline-flex items-center gap-2 bg-surface-container-high text-on-surface px-3 py-1 rounded-full w-fit">
+<span class="w-2 h-2 rounded-full bg-primary-fixed"></span>
+<span class="font-label-md text-label-md">Live Command Center Active</span>
+</div>
+<h1 class="font-display-lg text-display-lg md:text-display-lg text-headline-lg-mobile font-headline-lg-mobile text-on-background">
+                    Smart Tourist Safety.<br/>Smarter Response.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                    A centralized safety monitoring and incident response platform that helps authorities register tourists, monitor their locations, detect entry into high-risk zones, and respond faster to potential emergencies.
+                </p>
+<div class="flex flex-wrap gap-4 pt-sm">
+<a class="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-on-primary-fixed transition-colors flex items-center gap-2" href="#">
+                        Open Authority Dashboard
+                        <span class="material-symbols-outlined text-[18px]">dashboard</span>
+</a>
+<a class="bg-surface-container-high text-on-surface border border-outline-variant px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center gap-2" href="#">
+                        Explore the System
+                    </a>
+</div>
+</div>
+<div class="md:col-span-6 relative rounded-xl border border-outline/20 bg-surface shadow-sm overflow-hidden h-[400px]">
+<div class="bg-cover bg-center w-full h-full absolute inset-0 z-0" data-alt="A highly detailed UI mockup of a sophisticated digital map interface for a command center. The map shows a city layout with scattered blue tourist markers indicating safe zones, and a distinct, glowing red polygon representing a high-risk restricted area. A small tooltip hovers over a marker indicating an alert. The aesthetic is clean, professional, light mode, utilizing deep navy outlines, subtle tonal elevations, and crisp white backgrounds, exuding an authoritative and vigilant mood." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBxLUhzwy0AZamxrbP3-J364Gi-wWEkfV1YtQdYcNE6Umiy7_imijX9d9birNePKSbZuZ3QGdh2seYVEcygtYAT9y4DkEXYR39pNGn_XbAIeXLeP7yFrkL934SkmPx6_hAqgpmm2FfkUIC9o2StvKRqTEnYtIUxGi0cSStG9Fl3dJRSbBdo_N4-LDGgWcLZku8p13U9VzQ3IwQtwPa5VVGiYSQagVZUKFxy-PcOer5opSn9ojSFRJBd')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent z-10 flex flex-col justify-end p-md">
+<div class="bg-surface-container-lowest/90 backdrop-blur border border-outline/20 rounded-lg p-3 inline-flex items-center gap-3 w-fit shadow-sm">
+<span class="material-symbols-outlined text-error filled">warning</span>
+<div>
+<p class="font-label-md text-label-md text-on-background">Restricted Zone Entry Detected</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-[12px]">Tourist #T-492 near Coastal Ridge</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Statistics Section -->
+<section class="py-xl px-grid-margin max-w-7xl mx-auto bg-surface-container-low rounded-xl mb-xl border border-outline/10">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<!-- Stat Card 1 -->
+<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-outline/10 shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-[24px]">groups</span>
+<h3 class="font-headline-md text-headline-md text-primary mt-2">1,250+</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Registered Tourists</p>
+</div>
+<!-- Stat Card 2 -->
+<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-t-[3px] border-t-primary-fixed border-outline/10 shadow-sm">
+<span class="material-symbols-outlined text-primary-fixed text-[24px] filled">check_circle</span>
+<h3 class="font-headline-md text-headline-md text-primary mt-2">98%</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Currently Safe</p>
+</div>
+<!-- Stat Card 3 -->
+<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-outline/10 shadow-sm">
+<span class="material-symbols-outlined text-on-secondary-container text-[24px]">schedule</span>
+<h3 class="font-headline-md text-headline-md text-primary mt-2">24/7</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Monitoring Active</p>
+</div>
+<!-- Stat Card 4 -->
+<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-outline/10 shadow-sm">
+<span class="material-symbols-outlined text-on-secondary-container text-[24px]">flash_on</span>
+<h3 class="font-headline-md text-headline-md text-primary mt-2">&lt; 5 min</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Incident Awareness</p>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-dim border-t border-outline-variant w-full mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-grid-margin py-xl gap-lg w-full max-w-7xl mx-auto">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="text-body-lg font-body-lg font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined filled">security</span> TouristSafe
+                </span>
+<span class="font-body-md text-body-md text-on-surface-variant">© 2026 TouristSafe | Smart India Hackathon 2026</span>
+</div>
+<div class="flex flex-wrap gap-4 justify-center md:justify-end">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline transition-all" href="#">SIH25002 - Problem Statement</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline transition-all" href="#">Security Protocol</a>
+</div>
+</div>
+</footer>
+</body></html>

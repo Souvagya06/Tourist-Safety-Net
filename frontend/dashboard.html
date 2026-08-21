@@ -121,10 +121,8 @@
 <span class="text-title-lg font-title-lg font-bold text-on-primary dark:text-on-surface">Safetour Authority Command Center</span>
 <div class="h-4 w-px bg-outline-variant/30"></div>
 <div class="text-label-md font-label-md text-on-primary-container flex items-center gap-2">
-<span class="material-symbols-outlined text-[16px]">dashboard</span>
-                Dashboard
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-<span class="text-on-primary">Live Monitoring</span>
+<span class="material-symbols-outlined text-[16px]">map</span>
+<span class="text-on-primary">Live Tourist Map</span>
 </div>
 </div>
 <div class="flex items-center gap-lg">
@@ -151,35 +149,15 @@
 </div>
 </div>
 <nav class="flex-1 px-2 space-y-1">
-<a class="text-on-primary-container/70 dark:text-on-surface-variant flex items-center gap-3 px-4 py-3 mx-2 hover:bg-primary-container/50 dark:hover:bg-surface-container-high rounded-lg Transition-all duration-200 ease-in-out" href="#">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="text-body-md font-body-md">Dashboard</span>
-</a>
-<a class="bg-primary-container dark:bg-secondary-container text-on-primary-container dark:text-on-secondary-container flex items-center gap-3 px-4 py-3 rounded-lg mx-2 text-on-primary font-bold Transition-all duration-200 ease-in-out" href="#">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">videocam</span>
-<span class="text-body-md font-body-md">Live Monitoring</span>
-</a>
-<a class="text-on-primary-container/70 dark:text-on-surface-variant flex items-center gap-3 px-4 py-3 mx-2 hover:bg-primary-container/50 dark:hover:bg-surface-container-high rounded-lg Transition-all duration-200 ease-in-out" href="#">
-<span class="material-symbols-outlined">groups</span>
-<span class="text-body-md font-body-md">Tourists</span>
-</a>
-<a class="text-on-primary-container/70 dark:text-on-surface-variant flex items-center gap-3 px-4 py-3 mx-2 hover:bg-primary-container/50 dark:hover:bg-surface-container-high rounded-lg Transition-all duration-200 ease-in-out" href="#">
-<span class="material-symbols-outlined">warning</span>
-<span class="text-body-md font-body-md">Incidents</span>
-<span class="ml-auto bg-error/10 text-error px-2 py-0.5 rounded-full text-[10px] font-bold">1</span>
-</a>
-<a class="text-on-primary-container/70 dark:text-on-surface-variant flex items-center gap-3 px-4 py-3 mx-2 hover:bg-primary-container/50 dark:hover:bg-surface-container-high rounded-lg Transition-all duration-200 ease-in-out" href="#">
-<span class="material-symbols-outlined">map</span>
-<span class="text-body-md font-body-md">Risk Zones</span>
-</a>
-<a class="text-on-primary-container/70 dark:text-on-surface-variant flex items-center gap-3 px-4 py-3 mx-2 hover:bg-primary-container/50 dark:hover:bg-surface-container-high rounded-lg Transition-all duration-200 ease-in-out" href="#">
-<span class="material-symbols-outlined">leaderboard</span>
-<span class="text-body-md font-body-md">Analytics</span>
-</a>
-<a class="text-on-primary-container/70 dark:text-on-surface-variant flex items-center gap-3 px-4 py-3 mx-2 hover:bg-primary-container/50 dark:hover:bg-surface-container-high rounded-lg Transition-all duration-200 ease-in-out mt-auto" href="#">
-<span class="material-symbols-outlined">settings</span>
-<span class="text-body-md font-body-md">Settings</span>
-</a>
+<button class="w-full bg-primary-container dark:bg-secondary-container text-on-primary-container dark:text-on-secondary-container flex items-center gap-3 px-4 py-3 rounded-lg mx-2 font-bold Transition-all duration-200 ease-in-out" id="sidebarAddTouristBtn" style="width: calc(100% - 16px);">
+<span class="material-symbols-outlined">person_add</span>
+<span class="text-body-md font-body-md">Add Tourist</span>
+</button>
+<div class="px-6 pt-6">
+<p class="text-label-md font-label-md text-on-primary-container/60 uppercase tracking-wide">Registered</p>
+<p class="text-headline-md font-headline-md text-primary-fixed dark:text-primary mt-1" id="sidebarTotalCount">0</p>
+<p class="text-label-md font-label-md text-on-primary-container/60">tourists on the map</p>
+</div>
 </nav>
 </aside>
 <!-- Main Content Area -->
@@ -191,17 +169,13 @@
 <h2 class="text-headline-md font-headline-md text-on-surface">Live Tourist Monitoring</h2>
 <p class="text-body-md font-body-md text-on-surface-variant mt-1">Real-time tracking of registered tourists and active risk zones.</p>
 </div>
-<button class="bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors px-4 py-2 rounded-lg text-label-md font-label-md flex items-center gap-2 h-10 shadow-sm">
-<span class="material-symbols-outlined text-[18px]">add</span>
-                    Add Tourist
-                </button>
 </div>
 <!-- Stats Grid -->
 <div class="grid grid-cols-4 gap-4">
 <div class="bg-surface-container border border-outline-variant/30 rounded-xl p-4 flex items-center justify-between shadow-sm border-t-2 border-t-secondary">
 <div>
 <p class="text-label-md font-label-md text-on-surface-variant uppercase">Total Tourists</p>
-<p class="text-headline-md font-headline-md text-on-surface mt-1">24</p>
+<p class="text-headline-md font-headline-md text-on-surface mt-1" id="statTotal">0</p>
 </div>
 <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
 <span class="material-symbols-outlined text-on-secondary-container">groups</span>
@@ -210,7 +184,7 @@
 <div class="bg-surface-container border border-outline-variant/30 rounded-xl p-4 flex items-center justify-between shadow-sm border-t-2 border-t-[#15803d]">
 <div>
 <p class="text-label-md font-label-md text-on-surface-variant uppercase">Safe</p>
-<p class="text-headline-md font-headline-md text-[#15803d] mt-1">21</p>
+<p class="text-headline-md font-headline-md text-[#15803d] mt-1" id="statSafe">0</p>
 </div>
 <div class="w-10 h-10 rounded-full bg-[#15803d]/10 flex items-center justify-center">
 <span class="material-symbols-outlined text-[#15803d]">verified_user</span>
@@ -219,7 +193,7 @@
 <div class="bg-surface-container border border-outline-variant/30 rounded-xl p-4 flex items-center justify-between shadow-sm border-t-2 border-t-[#c2410c]">
 <div>
 <p class="text-label-md font-label-md text-on-surface-variant uppercase">At Risk</p>
-<p class="text-headline-md font-headline-md text-[#c2410c] mt-1">2</p>
+<p class="text-headline-md font-headline-md text-[#c2410c] mt-1" id="statAtRisk">0</p>
 </div>
 <div class="w-10 h-10 rounded-full bg-[#c2410c]/10 flex items-center justify-center">
 <span class="material-symbols-outlined text-[#c2410c]">warning</span>
@@ -228,7 +202,7 @@
 <div class="bg-surface-container border border-outline-variant/30 rounded-xl p-4 flex items-center justify-between shadow-sm border-t-2 border-t-error">
 <div>
 <p class="text-label-md font-label-md text-on-surface-variant uppercase">Active Alerts</p>
-<p class="text-headline-md font-headline-md text-error mt-1">1</p>
+<p class="text-headline-md font-headline-md text-error mt-1" id="statAlerts">0</p>
 </div>
 <div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center pulse-ring">
 <span class="material-symbols-outlined text-on-error-container">notification_important</span>
@@ -255,123 +229,592 @@
 </button>
 </div>
 <!-- High Risk Zone -->
-<div class="absolute top-1/3 left-1/3 w-64 h-64 rounded-full border-2 border-error bg-error/20 flex items-center justify-center z-10 pointer-events-none pulse-ring"></div>
+<div class="risk-zone absolute top-1/3 left-1/3 w-64 h-64 rounded-full border-2 border-error bg-error/20 flex items-center justify-center z-10 pointer-events-none pulse-ring" id="riskZone1"></div>
 <div class="absolute top-1/3 left-1/3 w-64 h-64 flex items-center justify-center z-20 pointer-events-none">
 <span class="bg-error text-on-error text-label-md font-label-md px-2 py-1 rounded shadow-sm">HIGH-RISK ZONE</span>
 </div>
-<!-- Map Markers -->
-<!-- Safe Marker 1 -->
-<button class="absolute top-1/4 left-1/4 w-6 h-6 rounded-full bg-[#15803d] border-2 border-surface-container-lowest flex items-center justify-center shadow-sm z-30 hover:scale-110 transition-transform group">
-<span class="material-symbols-outlined text-on-primary text-[14px]">person</span>
-<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-lowest text-on-surface text-label-md font-label-md px-2 py-1 rounded shadow-sm opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">Rahul Sharma</div>
-</button>
-<!-- Safe Marker 2 -->
-<button class="absolute top-2/3 left-1/2 w-6 h-6 rounded-full bg-[#15803d] border-2 border-surface-container-lowest flex items-center justify-center shadow-sm z-30 hover:scale-110 transition-transform group">
-<span class="material-symbols-outlined text-on-primary text-[14px]">person</span>
-<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-lowest text-on-surface text-label-md font-label-md px-2 py-1 rounded shadow-sm opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">Priya Das</div>
-</button>
-<!-- At Risk Marker -->
-<button class="absolute top-[40%] left-[40%] w-6 h-6 rounded-full bg-error border-2 border-surface-container-lowest flex items-center justify-center shadow-sm z-30 hover:scale-110 transition-transform group pulse-ring">
-<span class="material-symbols-outlined text-on-error text-[14px]">person</span>
-<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-error text-on-error text-label-md font-label-md px-2 py-1 rounded shadow-sm opacity-100 whitespace-nowrap pointer-events-none z-40">Sneha Roy</div>
-</button>
+<!-- Map Markers (rendered by JS) -->
+<div class="absolute inset-0 z-30" id="mapMarkersLayer"></div>
 </div>
 <!-- Right Panel Area -->
 <div class="w-[400px] flex flex-col gap-grid-gutter overflow-hidden shrink-0">
-<!-- Tourist Details Panel (Open for Rahul Sharma) -->
-<div class="bg-surface-container border border-outline-variant/30 rounded-xl shadow-sm flex flex-col overflow-hidden shrink-0">
+<!-- Tourist Details Panel -->
+<div class="bg-surface-container border border-outline-variant/30 rounded-xl shadow-sm flex flex-col overflow-hidden shrink-0" id="detailsPanel">
 <div class="bg-primary text-on-primary p-3 flex justify-between items-center">
 <h3 class="text-title-lg font-title-lg font-bold">Tourist Details</h3>
-<button class="text-on-primary/70 hover:text-on-primary transition-colors">
+<button class="text-on-primary/70 hover:text-on-primary transition-colors" id="closeDetailsBtn">
 <span class="material-symbols-outlined">close</span>
 </button>
 </div>
-<div class="p-4 flex flex-col gap-4">
+<div class="p-8 flex flex-col items-center text-center gap-2" id="detailsEmptyState">
+<span class="material-symbols-outlined text-[36px] text-on-surface-variant/50">touch_app</span>
+<p class="text-body-md font-body-md text-on-surface-variant">Click a person icon on the map to view that tourist's full details here.</p>
+</div>
+<div class="p-4 flex-col gap-4 hidden" id="detailsContent">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-3">
-<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container text-title-lg font-bold">
-                                    RS
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container text-title-lg font-bold shrink-0" id="detailAvatar">
+                                    --
                                 </div>
 <div>
-<h4 class="text-title-lg font-title-lg text-on-surface leading-tight">Rahul Sharma</h4>
-<p class="text-data-mono font-data-mono text-on-surface-variant">ID: TS-1024</p>
+<h4 class="text-title-lg font-title-lg text-on-surface leading-tight" id="detailName">--</h4>
+<p class="text-data-mono font-data-mono text-on-surface-variant" id="detailId">ID: --</p>
 </div>
 </div>
-<span class="bg-[#15803d]/10 text-[#15803d] px-3 py-1 rounded-full text-label-md font-label-md border border-[#15803d]/20 flex items-center gap-1">
-<span class="material-symbols-outlined text-[14px]">check_circle</span> SAFE
-                            </span>
+<span class="px-3 py-1 rounded-full text-label-md font-label-md border flex items-center gap-1 shrink-0" id="detailStatusPill">
+<span class="material-symbols-outlined text-[14px]" id="detailStatusIcon">check_circle</span> <span id="detailStatusText">--</span>
+</span>
 </div>
 <div class="grid grid-cols-2 gap-4 border-t border-outline-variant/20 pt-4">
 <div>
 <p class="text-label-md font-label-md text-on-surface-variant">Age</p>
-<p class="text-body-md font-body-md text-on-surface">27</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailAge">--</p>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant">Gender</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailGender">--</p>
 </div>
 <div>
 <p class="text-label-md font-label-md text-on-surface-variant">Phone</p>
-<p class="text-body-md font-body-md text-on-surface">+91 98765 43210</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailPhone">--</p>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant">Email</p>
+<p class="text-body-md font-body-md text-on-surface break-all" id="detailEmail">--</p>
+</div>
+<div class="col-span-2">
+<p class="text-label-md font-label-md text-on-surface-variant">Residential Address</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailAddress">--</p>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant">Nationality</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailNationality">--</p>
+</div>
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant">Govt ID</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailGovtId">--</p>
 </div>
 <div class="col-span-2">
 <p class="text-label-md font-label-md text-on-surface-variant">Emergency Contact</p>
-<p class="text-body-md font-body-md text-on-surface">Anita Sharma (Wife) - +91 98765 43211</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailEmergency">--</p>
+</div>
+<div class="col-span-2">
+<p class="text-label-md font-label-md text-on-surface-variant">Registered</p>
+<p class="text-body-md font-body-md text-on-surface" id="detailRegistered">--</p>
 </div>
 </div>
 <div class="border-t border-outline-variant/20 pt-4 flex gap-2">
-<button class="flex-1 bg-surface-container-high hover:bg-surface-variant text-on-surface py-2 rounded-lg text-label-md font-label-md transition-colors border border-outline-variant/30 flex items-center justify-center gap-1">
+<a class="flex-1 bg-surface-container-high hover:bg-surface-variant text-on-surface py-2 rounded-lg text-label-md font-label-md transition-colors border border-outline-variant/30 flex items-center justify-center gap-1" id="detailContactBtn" href="#">
 <span class="material-symbols-outlined text-[16px]">call</span> Contact
-                            </button>
-<button class="flex-1 bg-error/10 hover:bg-error/20 text-error py-2 rounded-lg text-label-md font-label-md transition-colors border border-error/30 flex items-center justify-center gap-1">
+                            </a>
+<button class="flex-1 bg-error/10 hover:bg-error/20 text-error py-2 rounded-lg text-label-md font-label-md transition-colors border border-error/30 flex items-center justify-center gap-1" id="detailDeleteBtn">
 <span class="material-symbols-outlined text-[16px]">delete</span> Delete
                             </button>
 </div>
 </div>
 </div>
-<!-- Recent Incidents Panel -->
+<!-- Recent Activity Panel -->
 <div class="bg-surface-container border border-outline-variant/30 rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
 <div class="p-3 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-low">
 <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Recent Activity</h3>
 <span class="material-symbols-outlined text-on-surface-variant">history</span>
 </div>
-<div class="p-0 overflow-y-auto flex-1">
-<!-- High Priority Item -->
-<div class="p-3 border-b border-outline-variant/20 bg-error/5 hover:bg-error/10 transition-colors flex gap-3">
-<div class="w-8 h-8 rounded-full bg-error/20 flex items-center justify-center shrink-0 mt-1">
-<span class="material-symbols-outlined text-error text-[16px]">warning</span>
-</div>
-<div>
-<p class="text-body-md font-body-md text-on-surface"><span class="font-bold">Rahul Sharma</span> Entered High-Risk Zone</p>
-<div class="flex items-center gap-2 mt-1">
-<span class="text-label-md font-label-md text-error">Active</span>
-<span class="w-1 h-1 rounded-full bg-outline"></span>
-<span class="text-label-md font-label-md text-on-surface-variant">Just now</span>
-</div>
-</div>
-</div>
-<!-- Normal Item -->
-<div class="p-3 border-b border-outline-variant/20 hover:bg-surface-container-high transition-colors flex gap-3">
-<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0 mt-1">
-<span class="material-symbols-outlined text-on-secondary-container text-[16px]">person_add</span>
-</div>
-<div>
-<p class="text-body-md font-body-md text-on-surface">New tourist <span class="font-bold">Arjun Singh</span> registered.</p>
-<div class="flex items-center gap-2 mt-1">
-<span class="text-label-md font-label-md text-on-surface-variant">15 mins ago</span>
-</div>
-</div>
-</div>
+<div class="p-0 overflow-y-auto flex-1" id="activityList">
 </div>
 </div>
 </div>
 </div>
 </main>
+<!-- Add Tourist Modal -->
+<div class="fixed inset-0 z-[200] hidden items-center justify-center bg-on-background/40 backdrop-blur-sm" id="addTouristModal">
+<div class="bg-surface-container-lowest w-[560px] max-h-[88vh] rounded-xl shadow-lg border border-outline-variant/30 flex flex-col overflow-hidden">
+<div class="bg-primary text-on-primary p-4 flex justify-between items-center shrink-0">
+<h3 class="text-title-lg font-title-lg font-bold">Add Tourist</h3>
+<button class="text-on-primary/70 hover:text-on-primary transition-colors" id="closeModalBtn">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form class="p-5 overflow-y-auto flex flex-col gap-4" id="addTouristForm">
+<div class="grid grid-cols-2 gap-4">
+<label class="flex flex-col gap-1 col-span-2">
+<span class="text-label-md font-label-md text-on-surface-variant">Full Name *</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_full_name" required="" type="text"/>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Age</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_age" min="0" type="number"/>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Gender</span>
+<select class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_gender">
+<option value="">Select</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
+<option value="Other">Other</option>
+</select>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Phone *</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_phone" required="" type="tel"/>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Email</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_email" type="email"/>
+</label>
+<label class="flex flex-col gap-1 col-span-2">
+<span class="text-label-md font-label-md text-on-surface-variant">Residential Address</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_address" type="text"/>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Nationality</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_nationality" type="text"/>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Govt ID Type *</span>
+<select class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_govt_id_type" required="">
+<option value="">Select</option>
+<option value="Aadhaar">Aadhaar</option>
+<option value="Passport">Passport</option>
+<option value="Voter ID">Voter ID</option>
+<option value="Driving License">Driving License</option>
+</select>
+</label>
+<label class="flex flex-col gap-1 col-span-2">
+<span class="text-label-md font-label-md text-on-surface-variant">Govt ID Number *</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_govt_id_number" required="" type="text"/>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Emergency Contact Name</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_emergency_name" type="text"/>
+</label>
+<label class="flex flex-col gap-1">
+<span class="text-label-md font-label-md text-on-surface-variant">Emergency Contact Phone</span>
+<input class="border border-outline-variant rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-lowest focus:ring-1 focus:ring-primary" id="f_emergency_phone" type="tel"/>
+</label>
+</div>
+<p class="text-label-md font-label-md text-on-surface-variant/70" id="modalError"></p>
+<div class="flex gap-2 justify-end pt-2 border-t border-outline-variant/20">
+<button class="px-4 py-2 rounded-lg text-label-md font-label-md border border-outline-variant/30 hover:bg-surface-container transition-colors" id="cancelModalBtn" type="button">Cancel</button>
+<button class="px-4 py-2 rounded-lg text-label-md font-label-md bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors flex items-center gap-1" type="submit">
+<span class="material-symbols-outlined text-[18px]">person_add</span> Add Tourist
+                    </button>
+</div>
+</form>
+</div>
+</div>
 <!-- Global Security Alert Overlay -->
-<div class="fixed top-20 right-8 z-[100] bg-error text-on-error p-4 rounded-xl shadow-lg border-2 border-error-container w-96 flex items-start gap-3 translate-y-0 opacity-100 transition-all duration-300">
+<div class="fixed top-20 right-8 z-[100] bg-error text-on-error p-4 rounded-xl shadow-lg border-2 border-error-container w-96 flex items-start gap-3 transition-all duration-300 hidden" id="securityAlert">
 <span class="material-symbols-outlined text-[28px] mt-0.5 pulse-ring">campaign</span>
 <div class="flex-1">
 <h4 class="text-title-lg font-title-lg font-bold leading-tight">SECURITY ALERT</h4>
-<p class="text-body-md font-body-md mt-1">Rahul Sharma has entered a High-Risk Zone.</p>
+<p class="text-body-md font-body-md mt-1" id="securityAlertText">--</p>
 </div>
-<button class="text-on-error/80 hover:text-on-error transition-colors">
+<button class="text-on-error/80 hover:text-on-error transition-colors" id="closeSecurityAlertBtn">
 <span class="material-symbols-outlined text-[20px]">close</span>
 </button>
 </div>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- In-memory "tourists" table (mirrors the tourists SQL table) ---------- */
+  var tourists = [];
+  var nextNumericId = 1025;
+  var selectedTouristId = null;
+  var activityLog = []; // { icon, iconClass, bgClass, text, meta, ts, tone }
+
+  var mapLayer = document.getElementById("mapMarkersLayer");
+  var mapArea = mapLayer.parentElement; // the map container (relative, overflow-hidden)
+  var zoneEls = Array.prototype.slice.call(document.querySelectorAll(".risk-zone"));
+
+  function genTouristId() {
+    nextNumericId += 1;
+    return "TS-" + (nextNumericId - 1);
+  }
+
+  function initials(name) {
+    return name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(function (w) { return w[0].toUpperCase(); })
+      .join("");
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement("div");
+    div.textContent = str == null ? "" : String(str);
+    return div.innerHTML;
+  }
+
+  /* ---------- Zone collision: is (xPct, yPct) inside any risk zone? ---------- */
+  function isInsideRiskZone(xPct, yPct) {
+    var mapRect = mapArea.getBoundingClientRect();
+    var px = mapRect.left + (xPct / 100) * mapRect.width;
+    var py = mapRect.top + (yPct / 100) * mapRect.height;
+    for (var i = 0; i < zoneEls.length; i++) {
+      var zr = zoneEls[i].getBoundingClientRect();
+      var cx = zr.left + zr.width / 2;
+      var cy = zr.top + zr.height / 2;
+      var r = zr.width / 2;
+      var dist = Math.hypot(px - cx, py - cy);
+      if (dist <= r) return true;
+    }
+    return false;
+  }
+
+  /* ---------- Activity feed ---------- */
+  function pushActivity(opts) {
+    activityLog.unshift({
+      icon: opts.icon,
+      bgClass: opts.bgClass,
+      iconClass: opts.iconClass,
+      text: opts.text,
+      tone: opts.tone || null,
+      metaLabel: opts.metaLabel || "Just now"
+    });
+    activityLog = activityLog.slice(0, 20);
+    renderActivity();
+  }
+
+  function renderActivity() {
+    var list = document.getElementById("activityList");
+    if (!activityLog.length) {
+      list.innerHTML =
+        '<div class="p-4 text-body-md font-body-md text-on-surface-variant">No activity yet. Add a tourist to get started.</div>';
+      return;
+    }
+    list.innerHTML = activityLog
+      .map(function (a) {
+        var toneRow =
+          '<div class="flex items-center gap-2 mt-1">' +
+          (a.tone
+            ? '<span class="text-label-md font-label-md text-error">' + a.tone + "</span>" +
+              '<span class="w-1 h-1 rounded-full bg-outline"></span>'
+            : "") +
+          '<span class="text-label-md font-label-md text-on-surface-variant">' + a.metaLabel + "</span>" +
+          "</div>";
+        return (
+          '<div class="p-3 border-b border-outline-variant/20 ' +
+          (a.tone ? "bg-error/5 hover:bg-error/10" : "hover:bg-surface-container-high") +
+          ' transition-colors flex gap-3">' +
+          '<div class="w-8 h-8 rounded-full ' + a.bgClass + ' flex items-center justify-center shrink-0 mt-1">' +
+          '<span class="material-symbols-outlined ' + a.iconClass + ' text-[16px]">' + a.icon + "</span>" +
+          "</div>" +
+          "<div>" +
+          '<p class="text-body-md font-body-md text-on-surface">' + a.text + "</p>" +
+          toneRow +
+          "</div></div>"
+        );
+      })
+      .join("");
+  }
+
+  /* ---------- Security alert banner ---------- */
+  var alertTimer = null;
+  function showSecurityAlert(message) {
+    var el = document.getElementById("securityAlert");
+    document.getElementById("securityAlertText").textContent = message;
+    el.classList.remove("hidden");
+    if (alertTimer) clearTimeout(alertTimer);
+    alertTimer = setTimeout(function () { el.classList.add("hidden"); }, 6000);
+  }
+  document.getElementById("closeSecurityAlertBtn").addEventListener("click", function () {
+    document.getElementById("securityAlert").classList.add("hidden");
+  });
+
+  /* ---------- Stats ---------- */
+  function renderStats() {
+    var total = tourists.length;
+    var safe = tourists.filter(function (t) { return t.status === "Safe"; }).length;
+    var atRisk = tourists.filter(function (t) { return t.status === "At Risk"; }).length;
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statSafe").textContent = safe;
+    document.getElementById("statAtRisk").textContent = atRisk;
+    document.getElementById("statAlerts").textContent = atRisk;
+    document.getElementById("sidebarTotalCount").textContent = total;
+  }
+
+  /* ---------- Tourist Details panel ---------- */
+  function renderDetailsPanel() {
+    var empty = document.getElementById("detailsEmptyState");
+    var content = document.getElementById("detailsContent");
+    var t = tourists.find(function (x) { return x.tourist_id === selectedTouristId; });
+
+    if (!t) {
+      empty.classList.remove("hidden");
+      content.classList.add("hidden");
+      content.classList.remove("flex");
+      return;
+    }
+    empty.classList.add("hidden");
+    content.classList.remove("hidden");
+    content.classList.add("flex");
+
+    document.getElementById("detailAvatar").textContent = initials(t.full_name);
+    document.getElementById("detailName").textContent = t.full_name;
+    document.getElementById("detailId").textContent = "ID: " + t.tourist_id;
+    document.getElementById("detailAge").textContent = t.age || "--";
+    document.getElementById("detailGender").textContent = t.gender || "--";
+    document.getElementById("detailPhone").textContent = t.phone || "--";
+    document.getElementById("detailEmail").textContent = t.email || "--";
+    document.getElementById("detailAddress").textContent = t.residential_address || "--";
+    document.getElementById("detailNationality").textContent = t.nationality || "--";
+    document.getElementById("detailGovtId").textContent =
+      (t.govt_id_type || "--") + (t.govt_id_number ? " · " + t.govt_id_number : "");
+    document.getElementById("detailEmergency").textContent =
+      t.emergency_contact_name || t.emergency_contact_phone
+        ? (t.emergency_contact_name || "--") + (t.emergency_contact_phone ? " - " + t.emergency_contact_phone : "")
+        : "--";
+    document.getElementById("detailRegistered").textContent = t.registration_date;
+    document.getElementById("detailContactBtn").href = t.phone ? "tel:" + t.phone : "#";
+
+    var pill = document.getElementById("detailStatusPill");
+    var icon = document.getElementById("detailStatusIcon");
+    var text = document.getElementById("detailStatusText");
+    if (t.status === "Safe") {
+      pill.className =
+        "bg-[#15803d]/10 text-[#15803d] px-3 py-1 rounded-full text-label-md font-label-md border border-[#15803d]/20 flex items-center gap-1 shrink-0";
+      icon.textContent = "check_circle";
+      text.textContent = "SAFE";
+    } else {
+      pill.className =
+        "bg-error/10 text-error px-3 py-1 rounded-full text-label-md font-label-md border border-error/20 flex items-center gap-1 shrink-0";
+      icon.textContent = "warning";
+      text.textContent = "AT RISK";
+    }
+  }
+
+  document.getElementById("closeDetailsBtn").addEventListener("click", function () {
+    selectedTouristId = null;
+    renderDetailsPanel();
+  });
+
+  document.getElementById("detailDeleteBtn").addEventListener("click", function () {
+    var t = tourists.find(function (x) { return x.tourist_id === selectedTouristId; });
+    if (!t) return;
+    tourists = tourists.filter(function (x) { return x.tourist_id !== selectedTouristId; });
+    selectedTouristId = null;
+    pushActivity({
+      icon: "person_remove",
+      bgClass: "bg-surface-variant",
+      iconClass: "text-on-surface-variant",
+      text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> removed from monitoring."
+    });
+    renderMarkers();
+    renderStats();
+    renderDetailsPanel();
+  });
+
+  function selectTourist(id) {
+    selectedTouristId = id;
+    renderDetailsPanel();
+    renderMarkers(); // to update the "selected" ring
+  }
+
+  /* ---------- Markers ---------- */
+  function markerColorClasses(status, isSelected) {
+    var base = status === "Safe" ? "bg-[#15803d]" : "bg-error";
+    var ring = isSelected ? "ring-4 ring-offset-2 ring-primary" : "";
+    return base + " " + ring;
+  }
+
+  function renderMarkers() {
+    mapLayer.innerHTML = tourists
+      .map(function (t) {
+        var isSelected = t.tourist_id === selectedTouristId;
+        var pulse = t.status === "At Risk" ? "pulse-ring" : "";
+        return (
+          '<button type="button" class="tourist-marker absolute w-6 h-6 rounded-full border-2 border-surface-container-lowest flex items-center justify-center shadow-sm hover:scale-110 transition-transform group cursor-grab active:cursor-grabbing ' +
+          markerColorClasses(t.status, isSelected) +
+          " " + pulse + '" data-id="' + t.tourist_id + '" style="left:' + t.x + "%; top:" + t.y + '%; transform: translate(-50%, -50%); pointer-events: auto;">' +
+          '<span class="material-symbols-outlined text-on-primary text-[14px]">person</span>' +
+          '<div class="absolute -top-8 left-1/2 -translate-x-1/2 ' +
+          (t.status === "At Risk" ? "bg-error text-on-error opacity-100" : "bg-surface-container-lowest text-on-surface opacity-0 group-hover:opacity-100") +
+          ' text-label-md font-label-md px-2 py-1 rounded shadow-sm whitespace-nowrap pointer-events-none z-40">' +
+          escapeHtml(t.full_name) +
+          "</div></button>"
+        );
+      })
+      .join("");
+  }
+
+  /* ---------- Drag + click handling (event delegation) ---------- */
+  var dragCtx = null;
+
+  mapLayer.addEventListener("mousedown", function (e) {
+    var markerEl = e.target.closest(".tourist-marker");
+    if (!markerEl) return;
+    e.preventDefault();
+    var id = markerEl.dataset.id;
+    var t = tourists.find(function (x) { return x.tourist_id === id; });
+    if (!t) return;
+
+    dragCtx = { id: id, moved: false, startX: e.clientX, startY: e.clientY };
+    document.body.style.userSelect = "none";
+    markerEl.classList.add("cursor-grabbing");
+
+    function onMove(ev) {
+      var rect = mapArea.getBoundingClientRect();
+      var xPct = ((ev.clientX - rect.left) / rect.width) * 100;
+      var yPct = ((ev.clientY - rect.top) / rect.height) * 100;
+      xPct = Math.max(1, Math.min(98, xPct));
+      yPct = Math.max(2, Math.min(97, yPct));
+      if (Math.abs(ev.clientX - dragCtx.startX) > 4 || Math.abs(ev.clientY - dragCtx.startY) > 4) {
+        dragCtx.moved = true;
+      }
+      t.x = xPct;
+      t.y = yPct;
+      markerEl.style.left = xPct + "%";
+      markerEl.style.top = yPct + "%";
+    }
+
+    function onUp() {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      document.body.style.userSelect = "";
+
+      if (!dragCtx.moved) {
+        selectTourist(id);
+      } else {
+        var wasAtRisk = t.status === "At Risk";
+        var nowAtRisk = isInsideRiskZone(t.x, t.y);
+        t.status = nowAtRisk ? "At Risk" : "Safe";
+
+        if (nowAtRisk && !wasAtRisk) {
+          showSecurityAlert(t.full_name + " has entered a High-Risk Zone.");
+          pushActivity({
+            icon: "warning",
+            bgClass: "bg-error/20",
+            iconClass: "text-error",
+            text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> entered High-Risk Zone",
+            tone: "Active",
+            metaLabel: "Just now"
+          });
+        } else if (!nowAtRisk && wasAtRisk) {
+          pushActivity({
+            icon: "check_circle",
+            bgClass: "bg-[#15803d]/20",
+            iconClass: "text-[#15803d]",
+            text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> exited the High-Risk Zone",
+            metaLabel: "Just now"
+          });
+        }
+        renderStats();
+        renderMarkers();
+        if (selectedTouristId === id) renderDetailsPanel();
+      }
+      dragCtx = null;
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  });
+
+  /* ---------- Add Tourist modal ---------- */
+  var modal = document.getElementById("addTouristModal");
+  function openModal() {
+    document.getElementById("modalError").textContent = "";
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+  function closeModal() {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.getElementById("addTouristForm").reset();
+  }
+  document.getElementById("sidebarAddTouristBtn").addEventListener("click", openModal);
+  document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+  document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+  modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
+
+  document.getElementById("addTouristForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var fullName = document.getElementById("f_full_name").value.trim();
+    var phone = document.getElementById("f_phone").value.trim();
+    var govtIdType = document.getElementById("f_govt_id_type").value;
+    var govtIdNumber = document.getElementById("f_govt_id_number").value.trim();
+
+    if (!fullName || !phone || !govtIdType || !govtIdNumber) {
+      document.getElementById("modalError").textContent =
+        "Please fill in Full Name, Phone, Govt ID Type and Govt ID Number.";
+      return;
+    }
+    var dupGovtId = tourists.some(function (t) { return t.govt_id_number === govtIdNumber; });
+    if (dupGovtId) {
+      document.getElementById("modalError").textContent =
+        "A tourist with this Govt ID Number is already registered.";
+      return;
+    }
+
+    // Default drop-in point near the centre of the map, with a little jitter
+    // so multiple tourists don't stack exactly on top of each other.
+    var x = 50 + (Math.random() * 20 - 10);
+    var y = 55 + (Math.random() * 20 - 10);
+
+    var tourist = {
+      tourist_id: genTouristId(),
+      full_name: fullName,
+      age: document.getElementById("f_age").value || null,
+      gender: document.getElementById("f_gender").value || null,
+      phone: phone,
+      email: document.getElementById("f_email").value.trim() || null,
+      residential_address: document.getElementById("f_address").value.trim() || null,
+      nationality: document.getElementById("f_nationality").value.trim() || null,
+      govt_id_type: govtIdType,
+      govt_id_number: govtIdNumber,
+      emergency_contact_name: document.getElementById("f_emergency_name").value.trim() || null,
+      emergency_contact_phone: document.getElementById("f_emergency_phone").value.trim() || null,
+      registration_date: new Date().toLocaleString(),
+      status: "Safe",
+      x: x,
+      y: y
+    };
+    tourist.status = isInsideRiskZone(tourist.x, tourist.y) ? "At Risk" : "Safe";
+
+    tourists.push(tourist);
+    pushActivity({
+      icon: "person_add",
+      bgClass: "bg-secondary-container",
+      iconClass: "text-on-secondary-container",
+      text: "New tourist <span class=\"font-bold\">" + escapeHtml(tourist.full_name) + "</span> registered.",
+      metaLabel: "Just now"
+    });
+
+    closeModal();
+    selectTourist(tourist.tourist_id);
+    renderMarkers();
+    renderStats();
+  });
+
+  /* ---------- Boot (no dummy tourists — starts empty at 0) ---------- */
+  function seed() {
+    tourists = [];
+    renderMarkers();
+    renderStats();
+    renderDetailsPanel();
+    renderActivity();
+  }
+
+  window.addEventListener("resize", function () {
+    // Re-check zone membership on resize since collision math uses live pixel geometry
+    var changed = false;
+    tourists.forEach(function (t) {
+      var nowAtRisk = isInsideRiskZone(t.x, t.y);
+      var wasAtRisk = t.status === "At Risk";
+      if (nowAtRisk !== wasAtRisk) {
+        t.status = nowAtRisk ? "At Risk" : "Safe";
+        changed = true;
+      }
+    });
+    if (changed) {
+      renderMarkers();
+      renderStats();
+      if (selectedTouristId) renderDetailsPanel();
+    }
+  });
+
+  seed();
+})();
+</script>
 </body></html>

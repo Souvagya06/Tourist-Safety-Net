@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en"><head>
+<html class="light scroll-smooth" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>TouristSafe - Smart Tourist Safety Platform</title>
@@ -123,11 +123,11 @@
                 TouristSafe
             </div>
 <!-- Navigation Links -->
-<div class="hidden md:flex gap-6 items-center h-full">
-<a class="h-full flex items-center text-primary dark:text-primary-fixed font-bold border-b-2 border-primary text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-80 transition-all duration-200" href="#">Home</a>
-<a class="h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">How It Works</a>
-<a class="h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Features</a>
-<a class="h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">About</a>
+<div class="hidden md:flex gap-6 items-center h-full" data-nav-links>
+<a class="nav-link h-full flex items-center text-primary dark:text-primary-fixed font-bold border-b-2 border-primary text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors opacity-80 transition-all duration-200" href="#home" data-nav-link="home">Home</a>
+<a class="nav-link h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#how-it-works" data-nav-link="how-it-works">How It Works</a>
+<a class="nav-link h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#features" data-nav-link="features">Features</a>
+<a class="nav-link h-full flex items-center text-on-surface-variant dark:text-on-secondary-fixed-variant text-body-md font-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#about" data-nav-link="about">About</a>
 </div>
 <!-- Trailing Action -->
 <div class="flex items-center">
@@ -139,7 +139,7 @@
 </div>
 </nav>
 <!-- Hero Section -->
-<header class="pt-[120px] pb-xl px-grid-margin max-w-7xl mx-auto">
+<header id="home" class="scroll-mt-20 pt-[120px] pb-xl px-grid-margin max-w-7xl mx-auto" data-section="home">
 <div class="grid grid-cols-1 md:grid-cols-12 gap-lg items-center">
 <div class="md:col-span-6 flex flex-col gap-md">
 <div class="inline-flex items-center gap-2 bg-surface-container-high text-on-surface px-3 py-1 rounded-full w-fit">
@@ -205,6 +205,55 @@
 </div>
 </div>
 </section>
+<!-- How It Works Section -->
+<section id="how-it-works" class="scroll-mt-20 py-[72px] px-grid-margin max-w-7xl mx-auto" data-section="how-it-works">
+<div class="max-w-2xl mb-xl">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">How it works</p>
+<h2 class="font-headline-md text-headline-md text-on-background mt-2">A clear path from arrival to assistance.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-3">TouristSafe connects registration, live location awareness, and rapid response in one coordinated workflow.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<article class="p-lg bg-surface-container-low rounded-lg border border-outline/10">
+<span class="material-symbols-outlined text-primary-container text-[28px]">badge</span>
+<h3 class="font-title-lg text-title-lg text-on-background mt-4">1. Register safely</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Authorities create a verified tourist profile with trip details and emergency contacts.</p>
+</article>
+<article class="p-lg bg-surface-container-low rounded-lg border border-outline/10">
+<span class="material-symbols-outlined text-primary-container text-[28px]">my_location</span>
+<h3 class="font-title-lg text-title-lg text-on-background mt-4">2. Monitor movement</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Live location updates make it easier to understand where visitors are and when they need help.</p>
+</article>
+<article class="p-lg bg-surface-container-low rounded-lg border border-outline/10">
+<span class="material-symbols-outlined text-primary-container text-[28px]">sos</span>
+<h3 class="font-title-lg text-title-lg text-on-background mt-4">3. Respond quickly</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Risk-zone alerts give response teams the context needed to act before a situation escalates.</p>
+</article>
+</div>
+</section>
+<!-- Features Section -->
+<section id="features" class="scroll-mt-20 py-[72px] px-grid-margin bg-surface-container-low" data-section="features">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-xl items-center">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">Built for vigilance</p>
+<h2 class="font-headline-md text-headline-md text-on-background mt-2">The right signal at the right time.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-3">A focused toolkit helps teams reduce blind spots while keeping every decision grounded in real-time information.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+<div class="p-md bg-surface-container-lowest rounded-lg border border-outline/10"><span class="material-symbols-outlined text-primary">map</span><h3 class="font-title-lg text-title-lg mt-3">Live map view</h3><p class="font-body-md text-body-md text-on-surface-variant mt-1">See active tourists and restricted zones at a glance.</p></div>
+<div class="p-md bg-surface-container-lowest rounded-lg border border-outline/10"><span class="material-symbols-outlined text-primary">notifications_active</span><h3 class="font-title-lg text-title-lg mt-3">Instant alerts</h3><p class="font-body-md text-body-md text-on-surface-variant mt-1">Surface unusual movement and zone-entry events quickly.</p></div>
+<div class="p-md bg-surface-container-lowest rounded-lg border border-outline/10"><span class="material-symbols-outlined text-primary">contact_emergency</span><h3 class="font-title-lg text-title-lg mt-3">Emergency contacts</h3><p class="font-body-md text-body-md text-on-surface-variant mt-1">Keep essential contact details close during an incident.</p></div>
+<div class="p-md bg-surface-container-lowest rounded-lg border border-outline/10"><span class="material-symbols-outlined text-primary">analytics</span><h3 class="font-title-lg text-title-lg mt-3">Actionable records</h3><p class="font-body-md text-body-md text-on-surface-variant mt-1">Review incidents and responses to improve future safety.</p></div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section id="about" class="scroll-mt-20 py-[72px] px-grid-margin max-w-7xl mx-auto" data-section="about">
+<div class="max-w-3xl">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">About TouristSafe</p>
+<h2 class="font-headline-md text-headline-md text-on-background mt-2">Technology that keeps human response at the center.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-4">TouristSafe is a smart safety platform for destinations that want to welcome visitors with confidence. It brings tourism teams and authorities together around one shared view of risk, location, and response.</p>
+</div>
+</section>
 <!-- Footer -->
 <footer class="bg-surface-container dark:bg-surface-dim border-t border-outline-variant w-full mt-auto">
 <div class="flex flex-col md:flex-row justify-between items-center px-grid-margin py-xl gap-lg w-full max-w-7xl mx-auto">
@@ -221,4 +270,5 @@
 </div>
 </div>
 </footer>
+<script src="./js/tourist.js"></script>
 </body></html>

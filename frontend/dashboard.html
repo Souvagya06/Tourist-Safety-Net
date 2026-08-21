@@ -7,7 +7,9 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -112,6 +114,22 @@
             0% { transform: scale(0.8); opacity: 0.8; }
             80%, 100% { transform: scale(2.5); opacity: 0; }
         }
+        /* Leaflet custom marker styles */
+        .leaflet-container {
+            font-family: 'Inter', sans-serif !important;
+        }
+        .custom-user-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-tourist-marker {
+            transition: transform 0.2s ease;
+        }
+        .custom-tourist-marker:hover {
+            transform: scale(1.15);
+            z-index: 999 !important;
+        }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md overflow-hidden">
@@ -128,18 +146,17 @@
 <div class="flex items-center gap-lg">
 <div class="relative hidden lg:block">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-primary-container text-[18px]">search</span>
-<input class="bg-primary-container border-none text-on-primary rounded-lg pl-9 pr-4 py-1.5 text-body-md font-body-md w-64 focus:ring-1 focus:ring-primary-fixed placeholder-on-primary-container/70" placeholder="Search tourists, IDs..." type="text"/>
+<input class="bg-primary-container border border-outline-variant/30 text-on-primary rounded-lg pl-9 pr-4 py-1.5 text-body-md font-body-md w-72 focus:ring-2 focus:ring-primary-fixed placeholder-on-primary-container/70" id="touristSearchInput" placeholder="Search Tourist ID (e.g. TS-1025)..." type="text"/>
 </div>
-<button class="relative hover:bg-primary-container dark:hover:bg-surface-container rounded-lg p-2 transition-all group">
-<span class="material-symbols-outlined text-on-primary dark:text-on-surface">notifications</span>
-<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-error rounded-full border border-on-primary-fixed"></span>
-</button>
-<img alt="Authority User Profile" class="w-8 h-8 rounded-full border border-outline-variant/20 object-cover" data-alt="A small, professional headshot of a security authority official in uniform, set against a neutral gray background. High-key lighting, sharp focus, corporate modern style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEjU6o0lzxvJhoJ8NQDeMV_L2E2h_-M252jglRVZWp84lsYxwkme6IjYrXUHXs7PSGCCCqTUfkGCA3nmiXoTWnQ3tusBgskfuW3JuLzRVGLXd_zc2fIk0SUkAFZ7tq6_QBG1iPTtZnh8mW1KviI5sCXzaCSnT4yg9qIXSaUUIrf6eyyA_R51je88wSrsj6AYC8HJ3efSAGkIdSVW1OuUBZ_EEz297Iy8EVsoLAnWT0sWxlmb9UvQkh"/>
+<a href="/" class="flex items-center gap-1.5 bg-primary-container hover:bg-primary-container/80 text-on-primary px-3 py-1.5 rounded-lg text-body-md font-bold transition-all border border-outline-variant/30 shadow-sm" title="Return to Landing Page">
+<span class="material-symbols-outlined text-[18px]">home</span>
+<span>Return to Home</span>
+</a>
 </div>
 </nav>
 <!-- SideNavBar -->
-<aside class="fixed left-0 top-0 h-full w-[280px] z-50 bg-on-primary-fixed dark:bg-surface-container-low border-r border-outline/20 flex flex-col py-md gap-2">
-<div class="px-lg pb-md mb-md border-b border-outline/10 flex items-center gap-3">
+<aside class="fixed left-0 top-0 h-full w-[280px] z-50 bg-on-primary-fixed dark:bg-surface-container-low border-r border-outline/20 flex flex-col py-md gap-2 overflow-y-auto">
+<div class="px-lg pb-md mb-2 border-b border-outline/10 flex items-center gap-3 shrink-0">
 <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shrink-0">
 <span class="material-symbols-outlined text-on-primary text-[24px]">shield_person</span>
 </div>
@@ -148,18 +165,53 @@
 <p class="text-label-md font-label-md text-on-primary-container">Vigilance &amp; Security</p>
 </div>
 </div>
-<nav class="flex-1 px-2 space-y-1">
-<button class="w-full bg-primary-container dark:bg-secondary-container text-on-primary-container dark:text-on-secondary-container flex items-center gap-3 px-4 py-3 rounded-lg mx-2 font-bold Transition-all duration-200 ease-in-out" id="sidebarAddTouristBtn" style="width: calc(100% - 16px);">
+<nav class="flex-1 px-2 space-y-3">
+<button class="w-full bg-primary-container dark:bg-secondary-container text-on-primary-container dark:text-on-secondary-container flex items-center gap-3 px-4 py-3 rounded-lg font-bold transition-all duration-200 ease-in-out hover:opacity-90 shadow-sm" id="sidebarAddTouristBtn">
 <span class="material-symbols-outlined">person_add</span>
 <span class="text-body-md font-body-md">Add Tourist</span>
 </button>
-<div class="px-6 pt-6">
-<p class="text-label-md font-label-md text-on-primary-container/60 uppercase tracking-wide">Registered</p>
-<p class="text-headline-md font-headline-md text-primary-fixed dark:text-primary mt-1" id="sidebarTotalCount">0</p>
-<p class="text-label-md font-label-md text-on-primary-container/60">tourists on the map</p>
+<div class="px-4 py-2 bg-primary-container/40 rounded-lg border border-outline-variant/10">
+<p class="text-label-md font-label-md text-on-primary-container/60 uppercase tracking-wide">Registered Tourists</p>
+<p class="text-headline-md font-headline-md text-primary-fixed dark:text-primary mt-0.5" id="sidebarTotalCount">0</p>
+<p class="text-label-md font-label-md text-on-primary-container/60">monitored on live map</p>
+</div>
+
+<!-- High Risk Danger Zone Entry Box (Placed under Command Center area) -->
+<div class="px-3 py-3 bg-primary-container/40 border border-error/30 rounded-lg flex flex-col gap-2">
+  <div class="flex items-center gap-2 text-error font-bold text-label-md uppercase tracking-wider">
+    <span class="material-symbols-outlined text-[18px]">warning</span>
+    <span>High Risk Danger Zone</span>
+  </div>
+  <form id="addRiskZoneForm" class="flex flex-col gap-2">
+    <input type="text" id="localityInput" placeholder="Enter locality name (e.g. Connaught Place)..." required
+           class="bg-primary-container border border-outline-variant/40 text-on-primary rounded-lg px-3 py-2 text-body-md focus:ring-1 focus:ring-error placeholder-on-primary-container/60 w-full" />
+    <div class="flex items-center gap-2">
+      <span class="text-label-md text-on-primary-container/70 shrink-0">Radius:</span>
+      <input type="number" id="localityRadius" value="3" min="0.5" step="0.5" max="50"
+             class="bg-primary-container border border-outline-variant/40 text-on-primary rounded-lg px-2 py-1.5 text-body-md focus:ring-1 focus:ring-error w-16 text-center" />
+      <span class="text-label-md text-on-primary-container/70 shrink-0">km</span>
+      <button type="submit" id="addRiskZoneBtn" class="flex-1 bg-error text-on-error hover:bg-error/90 font-bold px-2.5 py-1.5 rounded-lg text-body-md transition-colors flex items-center justify-center gap-1 shadow-sm">
+        <span class="material-symbols-outlined text-[16px]">add_location_alt</span>
+        <span>Add Zone</span>
+      </button>
+    </div>
+    <p id="riskZoneError" class="text-error text-[12px] hidden font-semibold"></p>
+  </form>
+
+  <!-- Active Red Zones List -->
+  <div class="mt-2 border-t border-outline-variant/20 pt-2">
+    <div class="flex items-center justify-between text-label-md text-on-primary-container mb-1.5">
+      <span class="font-bold">Active Red Zones</span>
+      <span id="riskZonesCount" class="bg-error/20 text-error px-2 py-0.5 rounded-full text-[11px] font-bold">0</span>
+    </div>
+    <div id="riskZonesList" class="max-h-40 overflow-y-auto space-y-1 pr-1 text-body-md">
+      <p class="text-label-md text-on-primary-container/50 italic py-1">No active red zones</p>
+    </div>
+  </div>
 </div>
 </nav>
 </aside>
+
 <!-- Main Content Area -->
 <main class="ml-[280px] mt-14 p-grid-margin h-[calc(100vh-56px)] flex flex-col gap-grid-gutter overflow-hidden bg-surface-container-lowest">
 <!-- Main Header & Stats -->
@@ -213,28 +265,22 @@
 <!-- Dashboard Layout: Map & Side Panels -->
 <div class="flex-1 flex gap-grid-gutter overflow-hidden relative">
 <!-- Map Area -->
-<div class="flex-1 bg-on-primary-fixed rounded-xl border border-outline-variant/30 relative overflow-hidden shadow-sm">
-<!-- Map Image Background (Placeholder) -->
-<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="A dark-themed satellite map interface displaying city blocks, roads, and terrain with high contrast. Deep navy blues and stark gray lines, suitable for a sophisticated security command center. Clean, modern, technological aesthetic." data-location="New Delhi" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYfTUgPYr79SNjEYlJy-vMlWCBvpjM-pZxi0wqiwwBDxMgqs68vwRu9j4qoNkkDO4r6hUzishDA2FEq97NleqIurs7XYQNU2CGFy9wBdymX6PD5Kicxl3bISEipHRARIp1KyKFHSTjYyNKyw-0zKi6k6_MD4VVNjI6OBhWpa0PSg-8alfbbOO4b1JSY863PksksADQZSgRTDMSDv9RvkNXlgiDFzs8pJpbwLoEd_q6LpVCi7rDw70I')"></div>
-<!-- Map Controls -->
-<div class="absolute top-4 right-4 flex flex-col gap-2">
-<button class="w-8 h-8 bg-surface-container-lowest border border-outline-variant rounded shadow-sm flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
-<span class="material-symbols-outlined text-[20px]">add</span>
+<div class="flex-1 bg-on-primary-fixed rounded-xl border border-outline-variant/30 relative overflow-hidden shadow-sm flex flex-col">
+<!-- Leaflet Map Container -->
+<div id="map" class="w-full h-full z-10 bg-[#f8fafc]"></div>
+
+<!-- Map Controls overlay (+ / - zoom and locate) -->
+<div class="absolute top-4 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
+<button id="zoomInBtn" title="Zoom In (+)" class="w-9 h-9 bg-surface-container-lowest/90 backdrop-blur-sm border border-outline-variant/40 rounded-lg shadow-md flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
+<span class="material-symbols-outlined text-[22px]">add</span>
 </button>
-<button class="w-8 h-8 bg-surface-container-lowest border border-outline-variant rounded shadow-sm flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
-<span class="material-symbols-outlined text-[20px]">remove</span>
+<button id="zoomOutBtn" title="Zoom Out (-)" class="w-9 h-9 bg-surface-container-lowest/90 backdrop-blur-sm border border-outline-variant/40 rounded-lg shadow-md flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
+<span class="material-symbols-outlined text-[22px]">remove</span>
 </button>
-<button class="w-8 h-8 bg-surface-container-lowest border border-outline-variant rounded shadow-sm flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface mt-2">
-<span class="material-symbols-outlined text-[20px]">my_location</span>
+<button id="locateUserBtn" title="Locate My Position & Zoom In" class="w-9 h-9 bg-primary text-on-primary border border-primary-fixed/40 rounded-lg shadow-md flex items-center justify-center hover:bg-on-primary-fixed-variant transition-colors mt-1">
+<span class="material-symbols-outlined text-[22px]">my_location</span>
 </button>
 </div>
-<!-- High Risk Zone -->
-<div class="risk-zone absolute top-1/3 left-1/3 w-64 h-64 rounded-full border-2 border-error bg-error/20 flex items-center justify-center z-10 pointer-events-none pulse-ring" id="riskZone1"></div>
-<div class="absolute top-1/3 left-1/3 w-64 h-64 flex items-center justify-center z-20 pointer-events-none">
-<span class="bg-error text-on-error text-label-md font-label-md px-2 py-1 rounded shadow-sm">HIGH-RISK ZONE</span>
-</div>
-<!-- Map Markers (rendered by JS) -->
-<div class="absolute inset-0 z-30" id="mapMarkersLayer"></div>
 </div>
 <!-- Right Panel Area -->
 <div class="w-[400px] flex flex-col gap-grid-gutter overflow-hidden shrink-0">
@@ -317,7 +363,7 @@
 <div class="bg-surface-container border border-outline-variant/30 rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
 <div class="p-3 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-low">
 <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Recent Activity</h3>
-<button class="text-on-surface-variant hover:text-on-surface transition-colors" id="clearActivityBtn" title="Clear from screen (does not delete from database)" type="button">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors" id="clearActivityBtn" title="Clear from screen" type="button">
 <span class="material-symbols-outlined">history</span>
 </button>
 </div>
@@ -415,20 +461,26 @@
 <span class="material-symbols-outlined text-[20px]">close</span>
 </button>
 </div>
+
+<!-- Application Main Script -->
 <script>
 (function () {
   "use strict";
 
-  /* ---------- Local mirror of the "tourists" table (synced with the backend) ---------- */
+  /* ---------- Data Models ---------- */
   var tourists = [];
   var selectedTouristId = null;
-  var activityLog = []; // on-screen only: { icon, iconClass, bgClass, text, meta, tone }
+  var activityLog = [];
+  var riskZones = []; // [{ id, locality_name, latitude, longitude, radius_km, circleLayer }]
 
-  var mapLayer = document.getElementById("mapMarkersLayer");
-  var mapArea = mapLayer.parentElement; // the map container (relative, overflow-hidden)
-  var zoneEls = Array.prototype.slice.call(document.querySelectorAll(".risk-zone"));
+  // Leaflet Map & Layer References
+  var map = null;
+  var userLocation = [28.6139, 77.2090]; // Default New Delhi coordinates
+  var userMarker = null;
+  var userCoverageCircle = null;
+  var touristMarkersMap = {}; // { tourist_id: L.marker }
 
-  /* ---------- Small fetch helpers ---------- */
+  /* ---------- API Helpers ---------- */
   function apiGet(url) {
     return fetch(url).then(function (r) {
       if (!r.ok) throw new Error("GET " + url + " failed");
@@ -481,8 +533,17 @@
     return div.innerHTML;
   }
 
-  /* Map a DB row (snake_case, pos_x/pos_y) to the shape the UI uses (x/y) */
+  /* Map DB tourist row to object, creating latitude/longitude if missing */
   function rowToTourist(row) {
+    var lat = row.pos_y != null && row.pos_y > -90 && row.pos_y < 90 && Math.abs(row.pos_y) > 1
+      ? Number(row.pos_y)
+      : userLocation[0] + (Math.random() * 0.08 - 0.04);
+    var lng = row.pos_x != null && row.pos_x > -180 && row.pos_x < 180 && Math.abs(row.pos_x) > 1
+      ? Number(row.pos_x)
+      : userLocation[1] + (Math.random() * 0.08 - 0.04);
+
+    var matchingZone = getMatchingRiskZone(lat, lng);
+
     return {
       tourist_id: row.tourist_id,
       full_name: row.full_name,
@@ -498,28 +559,517 @@
       emergency_contact_phone: row.emergency_contact_phone,
       registration_date: row.registration_date,
       status: row.status || "Safe",
-      x: row.pos_x != null ? Number(row.pos_x) : 50 + (Math.random() * 20 - 10),
-      y: row.pos_y != null ? Number(row.pos_y) : 55 + (Math.random() * 20 - 10)
+      lat: lat,
+      lng: lng,
+      pos_x: lng,
+      pos_y: lat,
+      currentZoneId: matchingZone ? matchingZone.id : null
     };
   }
 
-  /* ---------- Zone collision: is (xPct, yPct) inside any risk zone? ---------- */
-  function isInsideRiskZone(xPct, yPct) {
-    var mapRect = mapArea.getBoundingClientRect();
-    var px = mapRect.left + (xPct / 100) * mapRect.width;
-    var py = mapRect.top + (yPct / 100) * mapRect.height;
-    for (var i = 0; i < zoneEls.length; i++) {
-      var zr = zoneEls[i].getBoundingClientRect();
-      var cx = zr.left + zr.width / 2;
-      var cy = zr.top + zr.height / 2;
-      var r = zr.width / 2;
-      var dist = Math.hypot(px - cx, py - cy);
-      if (dist <= r) return true;
+  /* ---------- Check if (lat, lng) is inside ANY active Red Danger Zone ---------- */
+  function getMatchingRiskZone(lat, lng) {
+    if (!map) return null;
+    for (var i = 0; i < riskZones.length; i++) {
+      var rz = riskZones[i];
+      var distMeters = map.distance([lat, lng], [rz.latitude, rz.longitude]);
+      if (distMeters <= rz.radius_km * 1000) {
+        return rz;
+      }
     }
-    return false;
+    return null;
   }
 
-  /* ---------- Activity feed (on-screen list; DB is the source of truth) ---------- */
+  function isInsideAnyRiskZone(lat, lng) {
+    return getMatchingRiskZone(lat, lng) !== null;
+  }
+
+  /* ---------- Map Initialization ---------- */
+  function initMap() {
+    map = L.map("map", {
+      zoomControl: false,
+      attributionControl: false
+    }).setView(userLocation, 12);
+
+    // Light Theme Tile Layer (CartoDB Voyager light map)
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      subdomains: "abcd"
+    }).addTo(map);
+
+    // Zoom and Locate Controls
+    document.getElementById("zoomInBtn").addEventListener("click", function () {
+      map.zoomIn();
+    });
+    document.getElementById("zoomOutBtn").addEventListener("click", function () {
+      map.zoomOut();
+    });
+    document.getElementById("locateUserBtn").addEventListener("click", function () {
+      locateUserAndZoom();
+    });
+
+    // Detect browser current location & create 30 km diameter (15 km radius) area
+    locateUserAndZoom();
+  }
+
+  function locateUserAndZoom() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          userLocation = [pos.coords.latitude, pos.coords.longitude];
+          renderUserCoverage(userLocation);
+          map.flyTo(userLocation, 13, { duration: 1.2 });
+        },
+        function (err) {
+          console.warn("Geolocation fallback used:", err);
+          renderUserCoverage(userLocation);
+          map.flyTo(userLocation, 12);
+        },
+        { enableHighAccuracy: true, timeout: 7000 }
+      );
+    } else {
+      renderUserCoverage(userLocation);
+      map.flyTo(userLocation, 12);
+    }
+  }
+
+  function renderUserCoverage(latlng) {
+    if (userMarker) map.removeLayer(userMarker);
+    if (userCoverageCircle) map.removeLayer(userCoverageCircle);
+
+    // Blue Pulsing Icon for User Location
+    var userIcon = L.divIcon({
+      className: "custom-user-pin",
+      html: '<div class="w-7 h-7 rounded-full bg-sky-500 border-2 border-white shadow-lg flex items-center justify-center animate-pulse"><span class="material-symbols-outlined text-white text-[16px]">my_location</span></div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+
+    userMarker = L.marker(latlng, { icon: userIcon }).addTo(map);
+    userMarker.bindTooltip("<b>Your Location</b> (Software Operator)", { permanent: false, direction: "top" });
+
+    // 30 km diameter = 15 km radius (15,000 meters)
+    userCoverageCircle = L.circle(latlng, {
+      radius: 15000,
+      color: "#0284c7",
+      fillColor: "#38bdf8",
+      fillOpacity: 0.1,
+      weight: 2,
+      dashArray: "6, 6"
+    }).addTo(map);
+
+    userCoverageCircle.bindTooltip("<b>30 km Active Coverage Area</b>", { permanent: false, direction: "bottom" });
+  }
+
+  /* ---------- Risk Zones Management ---------- */
+  function loadRiskZones() {
+    return apiGet("/api/risk-zones").then(function (rows) {
+      rows.forEach(function (row) {
+        addRiskZoneCircleToMap(row);
+      });
+      renderRiskZonesList();
+    }).catch(function (err) {
+      console.error("Failed to load risk zones:", err);
+    });
+  }
+
+  function addRiskZoneCircleToMap(zone) {
+    var radiusKm = zone.radius_km != null
+      ? Number(zone.radius_km)
+      : (zone.radius_meters ? Number(zone.radius_meters) / 1000 : 3.0);
+    var radiusMeters = radiusKm * 1000;
+
+    var circleLayer = L.circle([zone.latitude, zone.longitude], {
+      radius: radiusMeters,
+      color: "#ba1a1a",
+      fillColor: "#ef4444",
+      fillOpacity: 0.35,
+      weight: 3
+    }).addTo(map);
+
+    var popupContent =
+      '<div class="p-2 font-body-md text-on-surface">' +
+      '<div class="font-bold text-error text-body-lg flex items-center gap-1 mb-1">' +
+      '<span class="material-symbols-outlined text-[18px]">warning</span> ' + escapeHtml(zone.locality_name) +
+      '</div>' +
+      '<p class="text-body-md text-on-surface-variant">Danger Zone Radius: <b>' + radiusKm.toFixed(1) + ' km</b></p>' +
+      '<button class="mt-2 w-full bg-error text-on-error hover:bg-error/90 text-label-md font-bold py-1 px-2 rounded shadow-sm flex items-center justify-center gap-1 remove-zone-btn" data-id="' + zone.id + '">' +
+      '<span class="material-symbols-outlined text-[16px]">delete</span> Remove Red Zone</button>' +
+      '</div>';
+
+    circleLayer.bindPopup(popupContent);
+
+    var zoneObj = {
+      id: zone.id,
+      locality_name: zone.locality_name,
+      latitude: zone.latitude,
+      longitude: zone.longitude,
+      radius_km: radiusKm,
+      circleLayer: circleLayer
+    };
+
+    riskZones.push(zoneObj);
+  }
+
+  function renderRiskZonesList() {
+    var listEl = document.getElementById("riskZonesList");
+    var countEl = document.getElementById("riskZonesCount");
+    countEl.textContent = riskZones.length;
+
+    if (!riskZones.length) {
+      listEl.innerHTML = '<p class="text-label-md text-on-primary-container/50 italic py-1">No active red zones</p>';
+      return;
+    }
+
+    listEl.innerHTML = riskZones
+      .map(function (z) {
+        return (
+          '<div class="flex items-center justify-between p-2 rounded bg-error/10 border border-error/20 hover:bg-error/20 transition-colors">' +
+          '<div class="flex items-center gap-1.5 overflow-hidden pr-1">' +
+          '<span class="material-symbols-outlined text-error text-[16px] shrink-0">report</span>' +
+          '<div class="truncate">' +
+          '<p class="text-body-md font-bold text-on-primary truncate leading-tight">' + escapeHtml(z.locality_name) + '</p>' +
+          '<p class="text-[11px] text-on-primary-container/70">' + z.radius_km + ' km radius</p>' +
+          '</div></div>' +
+          '<button class="remove-zone-btn shrink-0 text-error hover:bg-error/20 p-1 rounded transition-colors" data-id="' + z.id + '" title="Remove Red Zone">' +
+          '<span class="material-symbols-outlined text-[18px]">delete</span>' +
+          '</button></div>'
+        );
+      })
+      .join("");
+  }
+
+  /* Delegated handler for remove-zone-btn in sidebar & map popups */
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest(".remove-zone-btn");
+    if (!btn) return;
+    var zoneId = btn.dataset.id;
+    if (zoneId) {
+      removeRiskZone(zoneId);
+    }
+  });
+
+  function removeRiskZone(id) {
+    apiDelete("/api/risk-zones/" + encodeURIComponent(id))
+      .then(function () {
+        var idx = riskZones.findIndex(function (z) { return z.id == id; });
+        if (idx !== -1) {
+          var z = riskZones[idx];
+          if (z.circleLayer) map.removeLayer(z.circleLayer);
+          riskZones.splice(idx, 1);
+
+          renderRiskZonesList();
+          checkAllTouristsRiskStatus();
+
+          pushActivity({
+            icon: "check_circle",
+            bgClass: "bg-[#15803d]/20",
+            iconClass: "text-[#15803d]",
+            text: "Red Danger Zone <span class=\"font-bold\">" + escapeHtml(z.locality_name) + "</span> removed.",
+            metaLabel: "Just now"
+          });
+        }
+      })
+      .catch(function (err) {
+        console.error("Failed to delete risk zone:", err);
+        alert("Could not remove risk zone: " + (err.message || "Server error"));
+      });
+  }
+
+  /* Add Red Danger Zone Form submit (Geocoding bounded to 30km radius) */
+  document.getElementById("addRiskZoneForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var localityName = document.getElementById("localityInput").value.trim();
+    var radiusKm = parseFloat(document.getElementById("localityRadius").value) || 3.0;
+    var errEl = document.getElementById("riskZoneError");
+    var submitBtn = document.getElementById("addRiskZoneBtn");
+
+    if (!localityName) return;
+
+    errEl.classList.add("hidden");
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Searching...';
+
+    // Calculate viewbox (bounding box) around userLocation center (~30km radius)
+    var latDeg = 30 / 111.0;
+    var lngDeg = 30 / (111.0 * Math.cos(userLocation[0] * Math.PI / 180));
+    var minLon = userLocation[1] - lngDeg;
+    var maxLon = userLocation[1] + lngDeg;
+    var minLat = userLocation[0] - latDeg;
+    var maxLat = userLocation[0] + latDeg;
+    var viewbox = [minLon, maxLat, maxLon, minLat].join(",");
+
+    var searchUrl = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(localityName) +
+                    "&viewbox=" + viewbox + "&bounded=1";
+
+    fetch(searchUrl)
+      .then(function (r) { return r.json(); })
+      .then(function (results) {
+        if (!results || results.length === 0) {
+          // Fallback search without strict bounding if bounded search returned no results
+          return fetch("https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(localityName))
+            .then(function (r) { return r.json(); });
+        }
+        return results;
+      })
+      .then(function (results) {
+        if (!results || results.length === 0) {
+          throw new Error("Locality not found within 30 km radius of your location.");
+        }
+        var topResult = results[0];
+        var lat = parseFloat(topResult.lat);
+        var lon = parseFloat(topResult.lon);
+
+        // Check if location is within ~35 km of user's current location
+        var distFromUserKm = map ? (map.distance(userLocation, [lat, lon]) / 1000) : 0;
+        if (distFromUserKm > 35) {
+          throw new Error("Locality '" + localityName + "' is outside your 30 km radius (" + distFromUserKm.toFixed(1) + " km away).");
+        }
+
+        return apiPost("/api/risk-zones", {
+          locality_name: localityName,
+          latitude: lat,
+          longitude: lon,
+          radius_km: radiusKm
+        });
+      })
+      .then(function (savedZone) {
+        addRiskZoneCircleToMap(savedZone);
+        renderRiskZonesList();
+        map.flyTo([savedZone.latitude, savedZone.longitude], 13, { duration: 1.2 });
+
+        document.getElementById("localityInput").value = "";
+        checkAllTouristsRiskStatus();
+
+        pushActivity({
+          icon: "warning",
+          bgClass: "bg-error/20",
+          iconClass: "text-error",
+          text: "New Red Danger Zone defined at <span class=\"font-bold\">" + escapeHtml(savedZone.locality_name) + "</span> (" + savedZone.radius_km + " km radius)",
+          tone: "Active",
+          metaLabel: "Just now"
+        });
+      })
+      .catch(function (err) {
+        console.error("Geocoding/Save error:", err);
+        errEl.textContent = err.message || "Failed to add danger zone.";
+        errEl.classList.remove("hidden");
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">add_location_alt</span> <span>Add Zone</span>';
+      });
+  });
+
+  /* ---------- Check & update risk status of all tourists ---------- */
+  function checkAllTouristsRiskStatus() {
+    tourists.forEach(function (t) {
+      var matchingZone = getMatchingRiskZone(t.lat, t.lng);
+      var newZoneId = matchingZone ? matchingZone.id : null;
+      var newLocality = matchingZone ? matchingZone.locality_name : "";
+      var oldZoneId = t.currentZoneId || null;
+
+      if (newZoneId !== oldZoneId) {
+        t.currentZoneId = newZoneId;
+        t.status = matchingZone ? "At Risk" : "Safe";
+
+        apiPatch("/api/tourists/" + encodeURIComponent(t.tourist_id), {
+          status: t.status,
+          pos_x: t.lng,
+          pos_y: t.lat
+        }).catch(function (err) { console.error("Failed to update status:", err); });
+
+        if (matchingZone) {
+          var isShift = oldZoneId !== null;
+          var alertMsg = isShift
+            ? t.full_name + " shifted into High-Risk Zone: " + newLocality + "!"
+            : t.full_name + " has entered High-Risk Zone: " + newLocality + "!";
+          showSecurityAlert(alertMsg);
+
+          var desc = isShift
+            ? t.full_name + " moved into High-Risk Zone (" + newLocality + ")"
+            : t.full_name + " entered High-Risk Zone (" + newLocality + ")";
+
+          apiPost("/api/activities", {
+            tourist_id: t.tourist_id,
+            tourist_name: t.full_name,
+            activity_type: "ZONE_ENTER",
+            description: desc
+          }).catch(function (err) { console.error("Activity log error:", err); });
+
+          pushActivity({
+            icon: "warning",
+            bgClass: "bg-error/20",
+            iconClass: "text-error",
+            text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> moved into High-Risk Zone (<span class=\"font-bold\">" + escapeHtml(newLocality) + "</span>)",
+            tone: "Active",
+            metaLabel: "Just now"
+          });
+        } else {
+          apiPost("/api/activities", {
+            tourist_id: t.tourist_id,
+            tourist_name: t.full_name,
+            activity_type: "ZONE_EXIT",
+            description: t.full_name + " exited High-Risk Zone"
+          }).catch(function (err) { console.error("Activity log error:", err); });
+
+          pushActivity({
+            icon: "check_circle",
+            bgClass: "bg-[#15803d]/20",
+            iconClass: "text-[#15803d]",
+            text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> moved into Safe Zone",
+            metaLabel: "Just now"
+          });
+        }
+      }
+    });
+
+    renderMarkers();
+    renderStats();
+    if (selectedTouristId) renderDetailsPanel();
+  }
+
+  /* ---------- Render Tourist Leaflet Markers ---------- */
+  function renderMarkers() {
+    // Clear old markers
+    Object.keys(touristMarkersMap).forEach(function (id) {
+      map.removeLayer(touristMarkersMap[id]);
+    });
+    touristMarkersMap = {};
+
+    tourists.forEach(function (t) {
+      var isSelected = t.tourist_id === selectedTouristId;
+      var isRisk = t.status === "At Risk";
+
+      var bgColor = isRisk ? "#ba1a1a" : "#15803d";
+      var ringColor = isSelected ? "ring-4 ring-white shadow-xl" : "";
+      var pulse = isRisk ? "pulse-ring" : "";
+
+      var markerHtml =
+        '<div class="w-7 h-7 rounded-full text-white flex items-center justify-center shadow-md border-2 border-white cursor-pointer ' + ringColor + ' ' + pulse + '" style="background-color:' + bgColor + '">' +
+        '<span class="material-symbols-outlined text-[16px]">person</span>' +
+        '</div>';
+
+      var customIcon = L.divIcon({
+        className: "custom-tourist-marker",
+        html: markerHtml,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+
+      var marker = L.marker([t.lat, t.lng], {
+        icon: customIcon,
+        draggable: true
+      }).addTo(map);
+
+      marker.bindTooltip("<b>" + escapeHtml(t.full_name) + "</b> (" + escapeHtml(t.tourist_id) + ")", {
+        permanent: false,
+        direction: "top"
+      });
+
+      marker.on("click", function () {
+        selectTourist(t.tourist_id);
+      });
+
+      marker.on("dragend", function (ev) {
+        var newPos = ev.target.getLatLng();
+        t.lat = newPos.lat;
+        t.lng = newPos.lng;
+        t.pos_y = newPos.lat;
+        t.pos_x = newPos.lng;
+
+        var matchingZone = getMatchingRiskZone(t.lat, t.lng);
+        var newZoneId = matchingZone ? matchingZone.id : null;
+        var newLocality = matchingZone ? matchingZone.locality_name : "";
+        var oldZoneId = t.currentZoneId || null;
+
+        if (newZoneId !== oldZoneId) {
+          t.currentZoneId = newZoneId;
+          t.status = matchingZone ? "At Risk" : "Safe";
+
+          apiPatch("/api/tourists/" + encodeURIComponent(t.tourist_id), {
+            status: t.status,
+            pos_x: t.lng,
+            pos_y: t.lat
+          }).catch(function (err) { console.error("Failed to update dragged location:", err); });
+
+          if (matchingZone) {
+            var isShift = oldZoneId !== null;
+            var alertMsg = isShift
+              ? t.full_name + " shifted into High-Risk Zone: " + newLocality + "!"
+              : t.full_name + " moved into High-Risk Zone: " + newLocality + "!";
+            showSecurityAlert(alertMsg);
+
+            var desc = t.full_name + " moved into High-Risk Zone (" + newLocality + ")";
+            apiPost("/api/activities", {
+              tourist_id: t.tourist_id,
+              tourist_name: t.full_name,
+              activity_type: "ZONE_ENTER",
+              description: desc
+            }).catch(function (err) { console.error("Activity log error:", err); });
+
+            pushActivity({
+              icon: "warning",
+              bgClass: "bg-error/20",
+              iconClass: "text-error",
+              text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> moved into High-Risk Zone (<span class=\"font-bold\">" + escapeHtml(newLocality) + "</span>)",
+              tone: "Active",
+              metaLabel: "Just now"
+            });
+          } else {
+            apiPost("/api/activities", {
+              tourist_id: t.tourist_id,
+              tourist_name: t.full_name,
+              activity_type: "ZONE_EXIT",
+              description: t.full_name + " exited High-Risk Zone"
+            }).catch(function (err) { console.error("Activity log error:", err); });
+
+            pushActivity({
+              icon: "check_circle",
+              bgClass: "bg-[#15803d]/20",
+              iconClass: "text-[#15803d]",
+              text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> moved into Safe Zone",
+              metaLabel: "Just now"
+            });
+          }
+        }
+
+        renderStats();
+        renderMarkers();
+        if (selectedTouristId === t.tourist_id) renderDetailsPanel();
+      });
+
+      touristMarkersMap[t.tourist_id] = marker;
+    });
+  }
+
+  function selectTourist(id) {
+    selectedTouristId = id;
+    renderDetailsPanel();
+    renderMarkers();
+
+    var t = tourists.find(function (x) { return x.tourist_id === id; });
+    if (t && map) {
+      map.flyTo([t.lat, t.lng], 15, { duration: 1.0 });
+    }
+  }
+
+  /* ---------- Search Input Filter ---------- */
+  var searchInput = document.getElementById("touristSearchInput");
+  if (searchInput) {
+    searchInput.addEventListener("input", function (e) {
+      var query = e.target.value.toLowerCase().trim();
+      if (!query) return;
+      var match = tourists.find(function (t) {
+        return t.full_name.toLowerCase().includes(query) || t.tourist_id.toLowerCase().includes(query);
+      });
+      if (match) {
+        selectTourist(match.tourist_id);
+      }
+    });
+  }
+
+  /* ---------- Activity Feed ---------- */
   function pushActivity(opts) {
     activityLog.unshift({
       icon: opts.icon,
@@ -529,11 +1079,10 @@
       tone: opts.tone || null,
       metaLabel: opts.metaLabel || "Just now"
     });
-    activityLog = activityLog.slice(0, 30);
+    activityLog = activityLog.slice(0, 40);
     renderActivity();
   }
 
-  /* Convert a DB activities row into the on-screen shape */
   function activityRowToEntry(row) {
     var isWarning = row.activity_type === "ZONE_ENTER";
     var isExit = row.activity_type === "ZONE_EXIT";
@@ -552,7 +1101,7 @@
     var list = document.getElementById("activityList");
     if (!activityLog.length) {
       list.innerHTML =
-        '<div class="p-4 text-body-md font-body-md text-on-surface-variant">No activity to show. Add a tourist to get started, or this list was cleared from the screen.</div>';
+        '<div class="p-4 text-body-md font-body-md text-on-surface-variant">No activity to show. Add a tourist or danger zone to get started.</div>';
       return;
     }
     list.innerHTML = activityLog
@@ -560,7 +1109,7 @@
         var toneRow =
           '<div class="flex items-center gap-2 mt-1">' +
           (a.tone
-            ? '<span class="text-label-md font-label-md text-error">' + a.tone + "</span>" +
+            ? '<span class="text-label-md font-label-md text-error font-bold">' + a.tone + "</span>" +
               '<span class="w-1 h-1 rounded-full bg-outline"></span>'
             : "") +
           '<span class="text-label-md font-label-md text-on-surface-variant">' + a.metaLabel + "</span>" +
@@ -581,27 +1130,25 @@
       .join("");
   }
 
-  /* Clear button: wipes the on-screen list only. The activities table in the
-     database is untouched — reloading the page will re-fetch full history. */
   document.getElementById("clearActivityBtn").addEventListener("click", function () {
     activityLog = [];
     renderActivity();
   });
 
-  /* ---------- Security alert banner ---------- */
+  /* ---------- Security Alert Banner ---------- */
   var alertTimer = null;
   function showSecurityAlert(message) {
     var el = document.getElementById("securityAlert");
     document.getElementById("securityAlertText").textContent = message;
     el.classList.remove("hidden");
     if (alertTimer) clearTimeout(alertTimer);
-    alertTimer = setTimeout(function () { el.classList.add("hidden"); }, 6000);
+    alertTimer = setTimeout(function () { el.classList.add("hidden"); }, 7000);
   }
   document.getElementById("closeSecurityAlertBtn").addEventListener("click", function () {
     document.getElementById("securityAlert").classList.add("hidden");
   });
 
-  /* ---------- Stats ---------- */
+  /* ---------- Statistics ---------- */
   function renderStats() {
     var total = tourists.length;
     var safe = tourists.filter(function (t) { return t.status === "Safe"; }).length;
@@ -613,7 +1160,7 @@
     document.getElementById("sidebarTotalCount").textContent = total;
   }
 
-  /* ---------- Tourist Details panel ---------- */
+  /* ---------- Tourist Details Panel ---------- */
   function renderDetailsPanel() {
     var empty = document.getElementById("detailsEmptyState");
     var content = document.getElementById("detailsContent");
@@ -652,12 +1199,12 @@
     var text = document.getElementById("detailStatusText");
     if (t.status === "Safe") {
       pill.className =
-        "bg-[#15803d]/10 text-[#15803d] px-3 py-1 rounded-full text-label-md font-label-md border border-[#15803d]/20 flex items-center gap-1 shrink-0";
+        "bg-[#15803d]/10 text-[#15803d] px-3 py-1 rounded-full text-label-md font-label-md border border-[#15803d]/20 flex items-center gap-1 shrink-0 font-bold";
       icon.textContent = "check_circle";
       text.textContent = "SAFE";
     } else {
       pill.className =
-        "bg-error/10 text-error px-3 py-1 rounded-full text-label-md font-label-md border border-error/20 flex items-center gap-1 shrink-0";
+        "bg-error/10 text-error px-3 py-1 rounded-full text-label-md font-label-md border border-error/20 flex items-center gap-1 shrink-0 font-bold";
       icon.textContent = "warning";
       text.textContent = "AT RISK";
     }
@@ -666,6 +1213,7 @@
   document.getElementById("closeDetailsBtn").addEventListener("click", function () {
     selectedTouristId = null;
     renderDetailsPanel();
+    renderMarkers();
   });
 
   document.getElementById("detailDeleteBtn").addEventListener("click", function () {
@@ -678,6 +1226,10 @@
     apiDelete("/api/tourists/" + encodeURIComponent(idToDelete))
       .then(function () {
         tourists = tourists.filter(function (x) { return x.tourist_id !== idToDelete; });
+        if (touristMarkersMap[idToDelete]) {
+          map.removeLayer(touristMarkersMap[idToDelete]);
+          delete touristMarkersMap[idToDelete];
+        }
         selectedTouristId = null;
         pushActivity({
           icon: "person_remove",
@@ -691,137 +1243,11 @@
       })
       .catch(function (err) {
         console.error(err);
-        alert("Could not delete this tourist: " + (err.message || "Please try again."));
+        alert("Could not delete tourist: " + (err.message || "Server error"));
       });
   });
 
-  function selectTourist(id) {
-    selectedTouristId = id;
-    renderDetailsPanel();
-    renderMarkers(); // to update the "selected" ring
-  }
-
-  /* ---------- Markers ---------- */
-  function markerColorClasses(status, isSelected) {
-    var base = status === "Safe" ? "bg-[#15803d]" : "bg-error";
-    var ring = isSelected ? "ring-4 ring-offset-2 ring-primary" : "";
-    return base + " " + ring;
-  }
-
-  function renderMarkers() {
-    mapLayer.innerHTML = tourists
-      .map(function (t) {
-        var isSelected = t.tourist_id === selectedTouristId;
-        var pulse = t.status === "At Risk" ? "pulse-ring" : "";
-        return (
-          '<button type="button" class="tourist-marker absolute w-6 h-6 rounded-full border-2 border-surface-container-lowest flex items-center justify-center shadow-sm hover:scale-110 transition-transform group cursor-grab active:cursor-grabbing ' +
-          markerColorClasses(t.status, isSelected) +
-          " " + pulse + '" data-id="' + t.tourist_id + '" style="left:' + t.x + "%; top:" + t.y + '%; transform: translate(-50%, -50%); pointer-events: auto;">' +
-          '<span class="material-symbols-outlined text-on-primary text-[14px]">person</span>' +
-          '<div class="absolute -top-8 left-1/2 -translate-x-1/2 ' +
-          (t.status === "At Risk" ? "bg-error text-on-error opacity-100" : "bg-surface-container-lowest text-on-surface opacity-0 group-hover:opacity-100") +
-          ' text-label-md font-label-md px-2 py-1 rounded shadow-sm whitespace-nowrap pointer-events-none z-40">' +
-          escapeHtml(t.full_name) +
-          "</div></button>"
-        );
-      })
-      .join("");
-  }
-
-  /* ---------- Drag + click handling (event delegation) ---------- */
-  var dragCtx = null;
-
-  mapLayer.addEventListener("mousedown", function (e) {
-    var markerEl = e.target.closest(".tourist-marker");
-    if (!markerEl) return;
-    e.preventDefault();
-    var id = markerEl.dataset.id;
-    var t = tourists.find(function (x) { return x.tourist_id === id; });
-    if (!t) return;
-
-    dragCtx = { id: id, moved: false, startX: e.clientX, startY: e.clientY };
-    document.body.style.userSelect = "none";
-    markerEl.classList.add("cursor-grabbing");
-
-    function onMove(ev) {
-      var rect = mapArea.getBoundingClientRect();
-      var xPct = ((ev.clientX - rect.left) / rect.width) * 100;
-      var yPct = ((ev.clientY - rect.top) / rect.height) * 100;
-      xPct = Math.max(1, Math.min(98, xPct));
-      yPct = Math.max(2, Math.min(97, yPct));
-      if (Math.abs(ev.clientX - dragCtx.startX) > 4 || Math.abs(ev.clientY - dragCtx.startY) > 4) {
-        dragCtx.moved = true;
-      }
-      t.x = xPct;
-      t.y = yPct;
-      markerEl.style.left = xPct + "%";
-      markerEl.style.top = yPct + "%";
-    }
-
-    function onUp() {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-      document.body.style.userSelect = "";
-
-      if (!dragCtx.moved) {
-        selectTourist(id);
-      } else {
-        var wasAtRisk = t.status === "At Risk";
-        var nowAtRisk = isInsideRiskZone(t.x, t.y);
-        t.status = nowAtRisk ? "At Risk" : "Safe";
-
-        // Persist the new position + status to the tourists table
-        apiPatch("/api/tourists/" + encodeURIComponent(id), {
-          status: t.status,
-          pos_x: t.x,
-          pos_y: t.y
-        }).catch(function (err) { console.error("Failed to persist location:", err); });
-
-        if (nowAtRisk && !wasAtRisk) {
-          showSecurityAlert(t.full_name + " has entered a High-Risk Zone.");
-          var enterText = t.full_name + " entered High-Risk Zone";
-          apiPost("/api/activities", {
-            tourist_id: t.tourist_id,
-            tourist_name: t.full_name,
-            activity_type: "ZONE_ENTER",
-            description: enterText
-          }).catch(function (err) { console.error("Failed to log activity:", err); });
-          pushActivity({
-            icon: "warning",
-            bgClass: "bg-error/20",
-            iconClass: "text-error",
-            text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> entered High-Risk Zone",
-            tone: "Active",
-            metaLabel: "Just now"
-          });
-        } else if (!nowAtRisk && wasAtRisk) {
-          var exitText = t.full_name + " exited the High-Risk Zone";
-          apiPost("/api/activities", {
-            tourist_id: t.tourist_id,
-            tourist_name: t.full_name,
-            activity_type: "ZONE_EXIT",
-            description: exitText
-          }).catch(function (err) { console.error("Failed to log activity:", err); });
-          pushActivity({
-            icon: "check_circle",
-            bgClass: "bg-[#15803d]/20",
-            iconClass: "text-[#15803d]",
-            text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> exited the High-Risk Zone",
-            metaLabel: "Just now"
-          });
-        }
-        renderStats();
-        renderMarkers();
-        if (selectedTouristId === id) renderDetailsPanel();
-      }
-      dragCtx = null;
-    }
-
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-  });
-
-  /* ---------- Add Tourist modal ---------- */
+  /* ---------- Add Tourist Modal ---------- */
   var modal = document.getElementById("addTouristModal");
   function openModal() {
     document.getElementById("modalError").textContent = "";
@@ -851,11 +1277,10 @@
       return;
     }
 
-    // Default drop-in point near the centre of the map, with a little jitter
-    // so multiple tourists don't stack exactly on top of each other.
-    var x = 50 + (Math.random() * 20 - 10);
-    var y = 55 + (Math.random() * 20 - 10);
-    var status = isInsideRiskZone(x, y) ? "At Risk" : "Safe";
+    // Assign coordinate near user location with slight offset
+    var lat = userLocation[0] + (Math.random() * 0.04 - 0.02);
+    var lng = userLocation[1] + (Math.random() * 0.04 - 0.02);
+    var status = isInsideAnyRiskZone(lat, lng) ? "At Risk" : "Safe";
 
     var payload = {
       full_name: fullName,
@@ -870,8 +1295,8 @@
       emergency_contact_name: document.getElementById("f_emergency_name").value.trim() || null,
       emergency_contact_phone: document.getElementById("f_emergency_phone").value.trim() || null,
       status: status,
-      pos_x: x,
-      pos_y: y
+      pos_x: lng,
+      pos_y: lat
     };
 
     var submitBtn = e.target.querySelector("button[type=submit]");
@@ -881,8 +1306,7 @@
       .then(function (row) {
         var tourist = rowToTourist(row);
         tourists.push(tourist);
-        // The server already logs a REGISTERED row in the activities table —
-        // we just reflect it on screen here.
+
         pushActivity({
           icon: "person_add",
           bgClass: "bg-secondary-container",
@@ -890,6 +1314,7 @@
           text: "New tourist <span class=\"font-bold\">" + escapeHtml(tourist.full_name) + "</span> registered.",
           metaLabel: "Just now"
         });
+
         closeModal();
         selectTourist(tourist.tourist_id);
         renderMarkers();
@@ -898,26 +1323,31 @@
       .catch(function (err) {
         console.error(err);
         document.getElementById("modalError").textContent =
-          err.message || "Could not save this tourist. Please try again.";
+          err.message || "Could not save tourist. Please try again.";
       })
       .finally(function () {
         if (submitBtn) submitBtn.disabled = false;
       });
   });
 
-  /* ---------- Boot: load real data from the database ---------- */
+  /* ---------- Boot Sequence ---------- */
   function boot() {
+    initMap();
+
     Promise.all([
       apiGet("/api/tourists").catch(function (err) { console.error("Failed to load tourists:", err); return []; }),
-      apiGet("/api/activities?limit=25").catch(function (err) { console.error("Failed to load activities:", err); return []; })
+      apiGet("/api/activities?limit=30").catch(function (err) { console.error("Failed to load activities:", err); return []; }),
+      loadRiskZones()
     ]).then(function (results) {
       var touristRows = results[0] || [];
       var activityRows = results[1] || [];
 
       tourists = touristRows.map(rowToTourist);
-      // Re-check each tourist's status against real map geometry now that
-      // markers can actually be measured.
-      tourists.forEach(function (t) { t.status = isInsideRiskZone(t.x, t.y) ? "At Risk" : "Safe"; });
+
+      // Re-evaluate risk status against real risk zones
+      tourists.forEach(function (t) {
+        t.status = isInsideAnyRiskZone(t.lat, t.lng) ? "At Risk" : "Safe";
+      });
 
       activityLog = activityRows.map(activityRowToEntry);
 
@@ -927,24 +1357,6 @@
       renderActivity();
     });
   }
-
-  window.addEventListener("resize", function () {
-    // Re-check zone membership on resize since collision math uses live pixel geometry
-    var changed = false;
-    tourists.forEach(function (t) {
-      var nowAtRisk = isInsideRiskZone(t.x, t.y);
-      var wasAtRisk = t.status === "At Risk";
-      if (nowAtRisk !== wasAtRisk) {
-        t.status = nowAtRisk ? "At Risk" : "Safe";
-        changed = true;
-      }
-    });
-    if (changed) {
-      renderMarkers();
-      renderStats();
-      if (selectedTouristId) renderDetailsPanel();
-    }
-  });
 
   boot();
 })();

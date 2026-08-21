@@ -3,6 +3,7 @@ const path = require("path");
 
 const touristsRouter = require("./routes/tourists");
 const activitiesRouter = require("./routes/activities");
+const riskZonesRouter = require("./routes/riskZones");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 // API routes
 app.use("/api/tourists", touristsRouter);
 app.use("/api/activities", activitiesRouter);
+app.use("/api/risk-zones", riskZonesRouter);
 
 // Landing Page
 app.get("/", (req, res) => {

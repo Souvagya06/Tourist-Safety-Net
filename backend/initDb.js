@@ -121,6 +121,32 @@ async function initializeDatabase() {
             )
         `);
 
+        // RISK ZONES TABLE
+        // Stores high risk red danger zones (locality name, center lat/lng, radius)
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS risk_zones (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                locality_name TEXT NOT NULL,
+                latitude REAL NOT NULL,
+                longitude REAL NOT NULL,
+                radius_km REAL DEFAULT 3.0,
+                radius_meters REAL DEFAULT 3000,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        const riskZoneMigrations = [
+            "ALTER TABLE risk_zones ADD COLUMN radius_km REAL DEFAULT 3.0",
+            "ALTER TABLE risk_zones ADD COLUMN radius_meters REAL DEFAULT 3000",
+        ];
+        for (const sql of riskZoneMigrations) {
+            try {
+                await db.execute(sql);
+            } catch (err) {
+                // Column already exists — ignore.
+            }
+        }
+
         console.log("Database tables created successfully!");
     } catch (error) {
         console.error("Database initialization failed:", error);

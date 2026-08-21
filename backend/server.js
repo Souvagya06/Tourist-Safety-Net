@@ -1,6 +1,9 @@
 const express = require("express");
 const path = require("path");
 
+const touristsRouter = require("./routes/tourists");
+const activitiesRouter = require("./routes/activities");
+
 const app = express();
 
 const PORT = 5000;
@@ -11,6 +14,9 @@ app.use(express.json());
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
 
+// API routes
+app.use("/api/tourists", touristsRouter);
+app.use("/api/activities", activitiesRouter);
 
 // Landing Page
 app.get("/", (req, res) => {

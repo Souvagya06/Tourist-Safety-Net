@@ -317,7 +317,9 @@
 <div class="bg-surface-container border border-outline-variant/30 rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
 <div class="p-3 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-low">
 <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Recent Activity</h3>
-<span class="material-symbols-outlined text-on-surface-variant">history</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors" id="clearActivityBtn" title="Clear from screen (does not delete from database)" type="button">
+<span class="material-symbols-outlined">history</span>
+</button>
 </div>
 <div class="p-0 overflow-y-auto flex-1" id="activityList">
 </div>
@@ -417,23 +419,55 @@
 (function () {
   "use strict";
 
-  /* ---------- In-memory "tourists" table (mirrors the tourists SQL table) ---------- */
+  /* ---------- Local mirror of the "tourists" table (synced with the backend) ---------- */
   var tourists = [];
-  var nextNumericId = 1025;
   var selectedTouristId = null;
-  var activityLog = []; // { icon, iconClass, bgClass, text, meta, ts, tone }
+  var activityLog = []; // on-screen only: { icon, iconClass, bgClass, text, meta, tone }
 
   var mapLayer = document.getElementById("mapMarkersLayer");
   var mapArea = mapLayer.parentElement; // the map container (relative, overflow-hidden)
   var zoneEls = Array.prototype.slice.call(document.querySelectorAll(".risk-zone"));
 
-  function genTouristId() {
-    nextNumericId += 1;
-    return "TS-" + (nextNumericId - 1);
+  /* ---------- Small fetch helpers ---------- */
+  function apiGet(url) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error("GET " + url + " failed");
+      return r.json();
+    });
+  }
+  function apiPost(url, body) {
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().then(function (data) {
+        if (!r.ok) throw new Error(data.error || "POST " + url + " failed");
+        return data;
+      });
+    });
+  }
+  function apiPatch(url, body) {
+    return fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().then(function (data) {
+        if (!r.ok) throw new Error(data.error || "PATCH " + url + " failed");
+        return data;
+      });
+    });
+  }
+  function apiDelete(url) {
+    return fetch(url, { method: "DELETE" }).then(function (r) {
+      if (!r.ok) return r.json().then(function (d) { throw new Error(d.error || "DELETE failed"); });
+      return r.json();
+    });
   }
 
   function initials(name) {
-    return name
+    return (name || "")
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
@@ -445,6 +479,28 @@
     var div = document.createElement("div");
     div.textContent = str == null ? "" : String(str);
     return div.innerHTML;
+  }
+
+  /* Map a DB row (snake_case, pos_x/pos_y) to the shape the UI uses (x/y) */
+  function rowToTourist(row) {
+    return {
+      tourist_id: row.tourist_id,
+      full_name: row.full_name,
+      age: row.age,
+      gender: row.gender,
+      phone: row.phone,
+      email: row.email,
+      residential_address: row.residential_address,
+      nationality: row.nationality,
+      govt_id_type: row.govt_id_type,
+      govt_id_number: row.govt_id_number,
+      emergency_contact_name: row.emergency_contact_name,
+      emergency_contact_phone: row.emergency_contact_phone,
+      registration_date: row.registration_date,
+      status: row.status || "Safe",
+      x: row.pos_x != null ? Number(row.pos_x) : 50 + (Math.random() * 20 - 10),
+      y: row.pos_y != null ? Number(row.pos_y) : 55 + (Math.random() * 20 - 10)
+    };
   }
 
   /* ---------- Zone collision: is (xPct, yPct) inside any risk zone? ---------- */
@@ -463,7 +519,7 @@
     return false;
   }
 
-  /* ---------- Activity feed ---------- */
+  /* ---------- Activity feed (on-screen list; DB is the source of truth) ---------- */
   function pushActivity(opts) {
     activityLog.unshift({
       icon: opts.icon,
@@ -473,15 +529,30 @@
       tone: opts.tone || null,
       metaLabel: opts.metaLabel || "Just now"
     });
-    activityLog = activityLog.slice(0, 20);
+    activityLog = activityLog.slice(0, 30);
     renderActivity();
+  }
+
+  /* Convert a DB activities row into the on-screen shape */
+  function activityRowToEntry(row) {
+    var isWarning = row.activity_type === "ZONE_ENTER";
+    var isExit = row.activity_type === "ZONE_EXIT";
+    var isRemoved = row.activity_type === "REMOVED";
+    return {
+      icon: isWarning ? "warning" : isRemoved ? "person_remove" : isExit ? "check_circle" : "person_add",
+      bgClass: isWarning ? "bg-error/20" : isExit ? "bg-[#15803d]/20" : isRemoved ? "bg-surface-variant" : "bg-secondary-container",
+      iconClass: isWarning ? "text-error" : isExit ? "text-[#15803d]" : isRemoved ? "text-on-surface-variant" : "text-on-secondary-container",
+      text: escapeHtml(row.description),
+      tone: isWarning ? "Active" : null,
+      metaLabel: row.created_at ? new Date(row.created_at).toLocaleString() : "Just now"
+    };
   }
 
   function renderActivity() {
     var list = document.getElementById("activityList");
     if (!activityLog.length) {
       list.innerHTML =
-        '<div class="p-4 text-body-md font-body-md text-on-surface-variant">No activity yet. Add a tourist to get started.</div>';
+        '<div class="p-4 text-body-md font-body-md text-on-surface-variant">No activity to show. Add a tourist to get started, or this list was cleared from the screen.</div>';
       return;
     }
     list.innerHTML = activityLog
@@ -509,6 +580,13 @@
       })
       .join("");
   }
+
+  /* Clear button: wipes the on-screen list only. The activities table in the
+     database is untouched — reloading the page will re-fetch full history. */
+  document.getElementById("clearActivityBtn").addEventListener("click", function () {
+    activityLog = [];
+    renderActivity();
+  });
 
   /* ---------- Security alert banner ---------- */
   var alertTimer = null;
@@ -566,7 +644,7 @@
       t.emergency_contact_name || t.emergency_contact_phone
         ? (t.emergency_contact_name || "--") + (t.emergency_contact_phone ? " - " + t.emergency_contact_phone : "")
         : "--";
-    document.getElementById("detailRegistered").textContent = t.registration_date;
+    document.getElementById("detailRegistered").textContent = t.registration_date || "--";
     document.getElementById("detailContactBtn").href = t.phone ? "tel:" + t.phone : "#";
 
     var pill = document.getElementById("detailStatusPill");
@@ -593,17 +671,26 @@
   document.getElementById("detailDeleteBtn").addEventListener("click", function () {
     var t = tourists.find(function (x) { return x.tourist_id === selectedTouristId; });
     if (!t) return;
-    tourists = tourists.filter(function (x) { return x.tourist_id !== selectedTouristId; });
-    selectedTouristId = null;
-    pushActivity({
-      icon: "person_remove",
-      bgClass: "bg-surface-variant",
-      iconClass: "text-on-surface-variant",
-      text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> removed from monitoring."
-    });
-    renderMarkers();
-    renderStats();
-    renderDetailsPanel();
+    var idToDelete = t.tourist_id;
+
+    apiDelete("/api/tourists/" + encodeURIComponent(idToDelete))
+      .then(function () {
+        tourists = tourists.filter(function (x) { return x.tourist_id !== idToDelete; });
+        selectedTouristId = null;
+        pushActivity({
+          icon: "person_remove",
+          bgClass: "bg-surface-variant",
+          iconClass: "text-on-surface-variant",
+          text: "<span class=\"font-bold\">" + escapeHtml(t.full_name) + "</span> removed from monitoring."
+        });
+        renderMarkers();
+        renderStats();
+        renderDetailsPanel();
+      })
+      .catch(function (err) {
+        console.error(err);
+        alert("Could not delete this tourist. Please try again.");
+      });
   });
 
   function selectTourist(id) {
@@ -681,8 +768,22 @@
         var nowAtRisk = isInsideRiskZone(t.x, t.y);
         t.status = nowAtRisk ? "At Risk" : "Safe";
 
+        // Persist the new position + status to the tourists table
+        apiPatch("/api/tourists/" + encodeURIComponent(id), {
+          status: t.status,
+          pos_x: t.x,
+          pos_y: t.y
+        }).catch(function (err) { console.error("Failed to persist location:", err); });
+
         if (nowAtRisk && !wasAtRisk) {
           showSecurityAlert(t.full_name + " has entered a High-Risk Zone.");
+          var enterText = t.full_name + " entered High-Risk Zone";
+          apiPost("/api/activities", {
+            tourist_id: t.tourist_id,
+            tourist_name: t.full_name,
+            activity_type: "ZONE_ENTER",
+            description: enterText
+          }).catch(function (err) { console.error("Failed to log activity:", err); });
           pushActivity({
             icon: "warning",
             bgClass: "bg-error/20",
@@ -692,6 +793,13 @@
             metaLabel: "Just now"
           });
         } else if (!nowAtRisk && wasAtRisk) {
+          var exitText = t.full_name + " exited the High-Risk Zone";
+          apiPost("/api/activities", {
+            tourist_id: t.tourist_id,
+            tourist_name: t.full_name,
+            activity_type: "ZONE_EXIT",
+            description: exitText
+          }).catch(function (err) { console.error("Failed to log activity:", err); });
           pushActivity({
             icon: "check_circle",
             bgClass: "bg-[#15803d]/20",
@@ -740,20 +848,14 @@
         "Please fill in Full Name, Phone, Govt ID Type and Govt ID Number.";
       return;
     }
-    var dupGovtId = tourists.some(function (t) { return t.govt_id_number === govtIdNumber; });
-    if (dupGovtId) {
-      document.getElementById("modalError").textContent =
-        "A tourist with this Govt ID Number is already registered.";
-      return;
-    }
 
     // Default drop-in point near the centre of the map, with a little jitter
     // so multiple tourists don't stack exactly on top of each other.
     var x = 50 + (Math.random() * 20 - 10);
     var y = 55 + (Math.random() * 20 - 10);
+    var status = isInsideRiskZone(x, y) ? "At Risk" : "Safe";
 
-    var tourist = {
-      tourist_id: genTouristId(),
+    var payload = {
       full_name: fullName,
       age: document.getElementById("f_age").value || null,
       gender: document.getElementById("f_gender").value || null,
@@ -765,35 +867,63 @@
       govt_id_number: govtIdNumber,
       emergency_contact_name: document.getElementById("f_emergency_name").value.trim() || null,
       emergency_contact_phone: document.getElementById("f_emergency_phone").value.trim() || null,
-      registration_date: new Date().toLocaleString(),
-      status: "Safe",
-      x: x,
-      y: y
+      status: status,
+      pos_x: x,
+      pos_y: y
     };
-    tourist.status = isInsideRiskZone(tourist.x, tourist.y) ? "At Risk" : "Safe";
 
-    tourists.push(tourist);
-    pushActivity({
-      icon: "person_add",
-      bgClass: "bg-secondary-container",
-      iconClass: "text-on-secondary-container",
-      text: "New tourist <span class=\"font-bold\">" + escapeHtml(tourist.full_name) + "</span> registered.",
-      metaLabel: "Just now"
-    });
+    var submitBtn = e.target.querySelector("button[type=submit]");
+    if (submitBtn) submitBtn.disabled = true;
 
-    closeModal();
-    selectTourist(tourist.tourist_id);
-    renderMarkers();
-    renderStats();
+    apiPost("/api/tourists", payload)
+      .then(function (row) {
+        var tourist = rowToTourist(row);
+        tourists.push(tourist);
+        // The server already logs a REGISTERED row in the activities table —
+        // we just reflect it on screen here.
+        pushActivity({
+          icon: "person_add",
+          bgClass: "bg-secondary-container",
+          iconClass: "text-on-secondary-container",
+          text: "New tourist <span class=\"font-bold\">" + escapeHtml(tourist.full_name) + "</span> registered.",
+          metaLabel: "Just now"
+        });
+        closeModal();
+        selectTourist(tourist.tourist_id);
+        renderMarkers();
+        renderStats();
+      })
+      .catch(function (err) {
+        console.error(err);
+        document.getElementById("modalError").textContent =
+          err.message || "Could not save this tourist. Please try again.";
+      })
+      .finally(function () {
+        if (submitBtn) submitBtn.disabled = false;
+      });
   });
 
-  /* ---------- Boot (no dummy tourists — starts empty at 0) ---------- */
-  function seed() {
-    tourists = [];
-    renderMarkers();
-    renderStats();
-    renderDetailsPanel();
-    renderActivity();
+  /* ---------- Boot: load real data from the database ---------- */
+  function boot() {
+    Promise.all([
+      apiGet("/api/tourists").catch(function (err) { console.error("Failed to load tourists:", err); return []; }),
+      apiGet("/api/activities?limit=25").catch(function (err) { console.error("Failed to load activities:", err); return []; })
+    ]).then(function (results) {
+      var touristRows = results[0] || [];
+      var activityRows = results[1] || [];
+
+      tourists = touristRows.map(rowToTourist);
+      // Re-check each tourist's status against real map geometry now that
+      // markers can actually be measured.
+      tourists.forEach(function (t) { t.status = isInsideRiskZone(t.x, t.y) ? "At Risk" : "Safe"; });
+
+      activityLog = activityRows.map(activityRowToEntry);
+
+      renderMarkers();
+      renderStats();
+      renderDetailsPanel();
+      renderActivity();
+    });
   }
 
   window.addEventListener("resize", function () {
@@ -814,7 +944,7 @@
     }
   });
 
-  seed();
+  boot();
 })();
 </script>
 </body></html>

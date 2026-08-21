@@ -1,336 +1,280 @@
-# 🛡️ Smart Tourist Safety Monitoring & Incident Response System
+# 🛡️ Smart Tourist Safety Monitoring & Incident Response System (Safetour)
 
-A centralized tourist safety monitoring and incident response system designed to help security and tourism authorities register tourists, monitor their locations, identify potential safety risks, and respond quickly to incidents.
+A centralized tourist safety monitoring and incident response platform designed to help security and tourism authorities register tourists, monitor real-time locations, detect restricted high-risk zone intrusions via geofencing, and respond proactively to safety incidents.
 
 ---
 
 ## 📌 Problem Statement
 
-Tourists visiting remote, hilly, border, or unfamiliar regions may unknowingly enter unsafe or restricted areas, lose their way, or encounter emergency situations.
+Tourists visiting remote, hilly, border, or unfamiliar regions often face safety risks such as accidentally wandering into high-risk/restricted danger zones, getting lost, or encountering medical and environmental emergencies.
 
-Currently, authorities may have limited visibility over the movement and location of tourists. In many cases, action can only be taken after a tourist is reported missing or an incident has already occurred.
-
-The **Smart Tourist Safety Monitoring & Incident Response System** aims to address this problem by providing a centralized platform through which authorized authorities can register tourists, monitor their locations, identify potential risk situations, and respond more effectively.
+Traditionally, authorities have limited visibility over tourist movement and location, relying on delayed manual reporting after a tourist goes missing. The **Smart Tourist Safety Monitoring & Incident Response System** provides real-time visibility, automated geofence risk alerts, and centralized management to enable proactive intervention before emergencies escalate.
 
 ---
 
-## 🎯 Our Solution
+## 💻 Current Technology Stack
 
-The proposed system provides an **Authority Dashboard** where authorized personnel can manage and monitor registered tourists from a centralized platform.
+The Phase 1 prototype is built using a modern, lightweight, and scalable tech stack:
 
-The system is designed around the following workflow:
+### 🎨 Frontend
+* **Core Markup & Styling:** HTML5, Modern Responsive CSS (`frontend/css/style.css`).
+* **UI Framework:** **Tailwind CSS** (via CDN with `@tailwindcss/forms` & container query plugins, customized with theme tokens).
+* **Interactive Mapping Library:** **Leaflet.js (v1.9.4)** rendering **OpenStreetMap** tile layers with custom styled markers, drag-and-drop position controls, and dynamic circle overlay geofences.
+* **Icons & Typography:** Google Fonts (**Inter**, **Plus Jakarta Sans**), **Material Symbols Outlined** icon sets.
+* **Client-side Logic & Scripting:** Vanilla JavaScript (ES6+ modular script execution handling map state, geofence collision detection, modal dialogs, real-time alert triggers, and REST API communications).
+
+### ⚙️ Backend
+* **Runtime Environment:** **Node.js** (v18+)
+* **Web Framework:** **Express.js (v5.2.1)** for building RESTful API endpoints and serving static frontend assets.
+* **Environment Configuration:** **dotenv** for secret and database connection URL management.
+
+### 🗄️ Database & Data Storage
+* **Cloud Database:** **Turso Database** powered by **libSQL** (`@libsql/client` v0.17.4) — a modern, ultra-fast, distributed SQLite-compatible cloud database.
+* **Database Management & Migrations:** `backend/initDb.js` providing automated table initialization, schema verification, and column migration guards on server startup.
+* **Data Schemas:**
+  * `tourists`: Stores profile details (Name, Age, Phone, Govt ID, Emergency Contact, Safety Status, and X/Y map coordinates).
+  * `risk_zones`: Defines high-risk geographic danger zones (locality name, latitude, longitude, and radius in km/meters).
+  * `activities`: Durable event history logging tourist registrations, restricted zone entries/exits, and record deletions.
+  * `location_history`: Historical coordinate tracking per tourist for route auditing.
+  * `incidents`: Safety incident records and resolution statuses.
+
+---
+
+## 🔄 System Architecture & Workflow
 
 ```text
-Tourist Registration
-        │
-        ▼
-Tourist Added to Centralized Database
-        │
-        ▼
-Location Monitoring
-        │
-        ▼
-Authority Dashboard
-        │
-        ▼
-Risk / Restricted Zone Detection
-        │
-        ▼
-🚨 Security Alert
-        │
-        ▼
-Incident Response
+┌────────────────────────────────────────────────────────────────────────┐
+│                          AUTHORITY DASHBOARD                           │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│   ┌───────────────────┐    ┌───────────────────┐    ┌──────────────┐   │
+│   │ 👤 Add Tourist    │    │ 📍 Interactive    │    │ 🚨 Risk Zone │   │
+│   │   Registration    │    │    Leaflet Map    │    │    Alerts    │   │
+│   └─────────┬─────────┘    └─────────┬─────────┘    └──────▲───────┘   │
+│             │                        │                     │           │
+└─────────────┼────────────────────────┼─────────────────────┼───────────┘
+              │                        │                     │
+              ▼                        ▼                     │
+┌────────────────────────────────────────────────────────────┴───────────┐
+│                          EXPRESS 5 BACKEND API                         │
+│  - /api/tourists   - /api/risk-zones   - /api/activities               │
+└────────────────────────────────────────────────────────────┬───────────┘
+                                                             │
+                                                             ▼
+                                                ┌────────────────────────┐
+                                                │    TURSO CLOUD DB      │
+                                                │ (libSQL / SQLite engine)│
+                                                └────────────────────────┘
 ```
 
-The goal is to support a more **proactive approach to tourist safety**, allowing authorities to identify potential risks before they escalate into serious incidents.
-
----
-
-## ✨ Key Features
-
-* 👤 Tourist registration and centralized record management
-* 🗺️ Interactive map-based monitoring dashboard
-* 📍 Visualization of tourist locations on the map
-* 🔍 Individual tourist information retrieval
-* ➕ Add new tourists to the system
-* 🗑️ Permanently delete tourist records
-* 🔴 High-risk and restricted zone visualization
-* 🚨 Automatic alert generation when a tourist enters a restricted zone
-* 📊 Centralized monitoring for security authorities
-* 🔄 Simulated tourist movement for prototype demonstration
-
----
-
-# 🧪 Phase 1 Prototype
-
-The Phase 1 prototype demonstrates the core concept and workflow of the proposed system.
-
-For the prototype, tourist movement is simulated interactively. In the complete implementation, simulated location updates can be replaced with real-time GPS-based location data.
-
----
-
-## 1️⃣ Tourist Registration
-
-Authorized personnel can add a new tourist to the system by entering the required information.
-
-After registration:
-
-1. Tourist information is stored in the database.
-2. A unique tourist record is created.
-3. The tourist appears on the authority dashboard.
-4. A corresponding marker is displayed on the map.
+### 1️⃣ System Boot & Data Sync Workflow
+1. When the dashboard page (`/dashboard`) loads, the client boots by executing parallel API requests (`GET /api/tourists`, `GET /api/activities`, `GET /api/risk-zones`).
+2. Map pins and high-risk circular red zones are dynamically initialized on the Leaflet interactive map centered at the target geographic region.
+3. Live safety statuses for all tourists are re-evaluated against loaded risk zones.
 
 ```text
-Add Tourist
-      │
-      ▼
-Submit Tourist Details
-      │
-      ▼
-Store in Database
-      │
-      ▼
-Tourist Marker Appears on Map
+Dashboard Load ──► Fetch (Tourists, Risk Zones, Activities) ──► Render Leaflet Map & Stats
 ```
 
 ---
 
-## 2️⃣ Interactive Tourist Monitoring
-
-All registered tourists are represented by individual markers on an interactive map.
-
-The authority can view multiple tourists from a centralized dashboard and monitor their current displayed locations.
+### 2️⃣ Tourist Registration Workflow
+1. Authorized personnel submit tourist information (Full Name, Age, Gender, Phone, Email, Address, Govt ID Type/Number, Emergency Contact) via the modal form.
+2. The server auto-generates a human-friendly unique ID (e.g., `TS-1025`).
+3. The backend inserts the record into Turso DB (`tourists` table) and automatically records a `REGISTERED` event in the `activities` table.
+4. The frontend appends a new interactive marker on the Leaflet map and updates real-time statistics counters.
 
 ```text
-┌─────────────────────────────────────────┐
-│          AUTHORITY DASHBOARD            │
-├─────────────────────────────────────────┤
-│                                         │
-│        👤 Tourist 1                     │
-│                                         │
-│                 🔴 RED ZONE             │
-│                                         │
-│    👤 Tourist 2                         │
-│                                         │
-│                              👤 Tourist 3│
-│                                         │
-└─────────────────────────────────────────┘
+Submit Registration ──► API POST /api/tourists ──► Store in Turso DB ──► Log Activity ──► Map Marker Appears
 ```
 
 ---
 
-## 3️⃣ View Tourist Details
-
-When an authority clicks on a tourist marker, detailed information about that particular tourist is retrieved from the database and displayed.
-
-The information may include:
-
-* Tourist Name
-* Tourist ID
-* Age
-* Gender
-* Contact Information
-* Emergency Contact
-* Current Safety Status
-* Location Information
+### 3️⃣ Interactive Location Monitoring & Simulation Workflow
+1. Each tourist is represented by an interactive marker displaying their status (`Safe` or `At Risk`).
+2. Authorities can drag tourist markers across the map interface to simulate real-time GPS movement.
+3. Marker drop positions (`pos_x`, `pos_y` / coordinates) are saved to the backend database via `PATCH /api/tourists/:id/position` for persistence across sessions.
 
 ```text
-Click Tourist Marker
-        │
-        ▼
-Fetch Tourist Details
-        │
-        ▼
-Retrieve Data from Database
-        │
-        ▼
-Display Tourist Information
+Drag Tourist Marker ──► Update Position ──► Save Coordinates to DB ──► Re-calculate Proximity
 ```
 
 ---
 
-## 4️⃣ Tourist Record Management
-
-The system allows authorized personnel to permanently remove a tourist from the system.
-
-The deletion process includes a confirmation step to prevent accidental removal.
-
-```text
-Select Tourist
-       │
-       ▼
-View Tourist Details
-       │
-       ▼
-Click "Delete Tourist"
-       │
-       ▼
-Confirmation Required
-       │
-       ▼
-Delete from Database
-       │
-       ▼
-Remove Marker from Map
-```
-
-After deletion, the tourist record is permanently removed from the database.
-
----
-
-## 5️⃣ Restricted Zone Detection
-
-The authority dashboard contains predefined **high-risk or restricted zones**.
-
-For the Phase 1 prototype, a tourist marker can be moved interactively to simulate changes in location.
-
-Whenever the tourist's location changes, the system checks whether the tourist has entered a restricted zone.
+### 4️⃣ Geofence Risk Detection & Security Alert Workflow
+1. Whenever a tourist's location updates, the client calculates the distance between the tourist's coordinates and all active high-risk danger zone centers (`risk_zones`).
+2. **If inside a Risk Zone:**
+   * Tourist status updates immediately to **`At Risk`**.
+   * An automated **🚨 Security Alert Modal** pops up displaying the tourist name, ID, zone locality, and time of detection.
+   * An entry (`ZONE_ENTER`) is posted to `/api/activities` and displayed in the Recent Activity log.
+3. **If exiting a Risk Zone:**
+   * Tourist status reverts to **`Safe`**.
+   * A `ZONE_EXIT` activity log is generated.
 
 ```text
-Tourist Location Changes
+Tourist Location Updates
           │
           ▼
-Check Current Coordinates
-          │
-          ▼
-Is Tourist Inside Restricted Zone?
+Calculate Distance to Risk Zones
           │
       ┌───┴───┐
       │       │
-     NO      YES
+    SAFE    INSIDE ZONE
       │       │
       ▼       ▼
-Continue   🚨 Generate Alert
-Monitoring
+   Status:  🚨 Trigger Security Alert
+   "Safe"   Set Status: "At Risk"
+            Log ZONE_ENTER Event
 ```
 
 ---
 
-## 🚨 Automated Security Alert
+### 5️⃣ Record Deletion & Management Workflow
+1. Authorities can select a tourist from the list or click their marker to view detailed information.
+2. Selecting **"Delete Tourist"** triggers a confirmation prompt.
+3. Upon confirmation, `DELETE /api/tourists/:id` removes the tourist from the database and logs a durable `REMOVED` activity event.
+4. The marker is removed from the Leaflet map and system metrics update instantly.
 
-When a tourist enters a designated restricted or high-risk zone, the system automatically generates a security alert.
+---
 
-The alert can contain information such as:
+## 🛠️ API Reference
 
-* Tourist Name
-* Tourist ID
-* Current Location
-* Restricted Zone Information
-* Time of Detection
-* Current Safety Status
+### 👤 Tourists API (`/api/tourists`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/tourists` | Fetch all registered tourists sorted by registration date |
+| `POST` | `/api/tourists` | Register a new tourist (generates unique `TS-XXXX` ID) |
+| `PATCH` | `/api/tourists/:id/position` | Update saved map position coordinates for a tourist |
+| `DELETE` | `/api/tourists/:id` | Permanently delete a tourist record |
 
-### Example Alert
+### 🔴 Risk Zones API (`/api/risk-zones`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/risk-zones` | Retrieve all active high-risk / restricted danger zones |
+| `POST` | `/api/risk-zones` | Add a new danger zone (locality name, lat, lng, radius) |
+| `DELETE` | `/api/risk-zones/:id` | Remove a high-risk danger zone |
+
+### 📊 Activities API (`/api/activities`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/activities?limit=25` | Fetch durable recent activity history log |
+| `POST` | `/api/activities` | Log system events (zone entry, exit, registration, deletion) |
+
+---
+
+## 📁 Repository Structure
 
 ```text
-🚨 SECURITY ALERT
-
-Tourist: Rahul Sharma
-Tourist ID: TS-1024
-
-⚠️ ALERT:
-The tourist has entered a restricted zone.
-
-Current Status: AT RISK
-
-[ View Details ] [ Acknowledge ]
-```
-
-This allows security authorities to quickly identify the affected tourist and take appropriate action.
-
----
-
-# 🔄 Prototype Workflow
-
-The complete demonstration flow for the Phase 1 prototype is:
-
-```text
-┌──────────────────────┐
-│   Open Dashboard     │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│    Add a Tourist     │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│ Store Data in Database│
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│ Tourist Appears on Map│
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│ Click Tourist Marker │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│ Display Tourist Data │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│ Simulate Movement    │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│ Tourist Enters       │
-│ Restricted Zone      │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│ 🚨 Security Alert    │
-└──────────────────────┘
+Tourist-Safety-Net/
+├── backend/
+│   ├── config/
+│   │   └── db.js            # Turso libSQL client configuration & connection
+│   ├── routes/
+│   │   ├── tourists.js      # Express route handlers for tourist CRUD & location updates
+│   │   ├── riskZones.js     # Express route handlers for high-risk geofence zones
+│   │   └── activities.js    # Express route handlers for durable activity event logging
+│   ├── initDb.js            # Table creation, migrations, and database seed logic
+│   ├── server.js            # Main Express server & frontend static asset hosting
+│   ├── .env                 # Database credentials (TURSO_DATABASE_URL, TURSO_AUTH_TOKEN)
+│   └── package.json         # Backend dependencies (@libsql/client, express, dotenv)
+├── frontend/
+│   ├── css/
+│   │   └── style.css        # Custom styles, responsive tweaks & map overrides
+│   ├── js/                  # Modular client scripts (map.js, api.js, alerts.js, etc.)
+│   ├── dashboard.html       # Centralized Authority Monitoring Dashboard
+│   └── index.html           # Safetour Landing Page & Entry Portal
+├── package.json             # Root configuration file
+└── README.md                # Project documentation
 ```
 
 ---
 
-# 🔮 Future Scope
+## 🚀 Getting Started & Local Setup
 
-The Phase 1 prototype demonstrates the core concept of the proposed system.
-
-The complete system can be extended with:
-
-* 📡 Real-time GPS-based location tracking
-* 📱 Dedicated tourist tracking devices
-* 🆘 SOS and emergency assistance
-* 🗺️ Advanced geofencing
-* 🧭 Route monitoring and deviation detection
-* 🔔 Automatic emergency notifications
-* 👨‍👩‍👧 Emergency contact alerts
-* 🚓 Authority response management
-* 🔍 Search and rescue coordination
-* 📊 Safety analytics and insights
-* 🌐 Multi-region deployment
+### Prerequisites
+* **Node.js** (v18.x or higher)
+* **npm** (v9.x or higher)
+* A **Turso Database** instance (or libSQL compatible database)
 
 ---
 
-# 👥 Team
+### Step 1: Clone & Install Dependencies
 
-This project is being developed by a team of **6 members**.
+```bash
+git clone https://github.com/Souvagya06/Tourist-Safety-Net.git
+cd Tourist-Safety-Net/backend
+npm install
+```
 
-| No. | Team Member           |
+---
+
+### Step 2: Configure Environment Variables
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+PORT=5000
+TURSO_DATABASE_URL=libsql://<your-database-name>.turso.io
+TURSO_AUTH_TOKEN=<your-turso-auth-token>
+```
+
+---
+
+### Step 3: Initialize Database
+
+Run the database initialization script to create tables and migrations in your Turso database:
+
+```bash
+node backend/initDb.js
+```
+
+---
+
+### Step 4: Start the Server
+
+Start the backend development server:
+
+```bash
+npm run dev
+# OR
+node backend/server.js
+```
+
+---
+
+### Step 5: Access the Web Application
+
+Open your browser and navigate to:
+* **Landing Page:** [`http://localhost:5000/`](http://localhost:5000/)
+* **Authority Dashboard:** [`http://localhost:5000/dashboard`](http://localhost:5000/dashboard)
+
+---
+
+## 🔮 Future Roadmap
+
+* 📡 **Live GPS Device Integration:** Real-world tracking via wearable hardware/mobile apps replacing simulated marker updates.
+* 📱 **Mobile App for Tourists:** Dedicated tourist app with one-touch **SOS Emergency Button**, offline maps, and warning notifications.
+* 🤖 **AI-Driven Anomaly Detection:** Automated route deviation detection flagging unusual tourist movement patterns in remote areas.
+* 👨‍👩‍👧 **Emergency Contact SMS Alerts:** Automated SMS notifications sent to family members when a tourist enters a dangerous area.
+* 🚓 **First Responder Dispatching:** Authority portal tools to dispatch local emergency responders directly to tourist GPS coordinates.
+
+---
+
+## 👥 Development Team
+
+Developed by a dedicated 6-member team:
+
+| No. | Team Member |
 | :-: | --------------------- |
-|  1  | **Souvagya Karmakar** |
-|  2  | **Anirban Pal**       |
-|  3  | **Sushmita Roy**      |
-|  4  | **Bikram Pal**        |
-|  5  | **Saikat Mahara**     |
-|  6  | **Mayukh Paul**       |
+| 1 | **Souvagya Karmakar** |
+| 2 | **Anirban Pal** |
+| 3 | **Sushmita Roy** |
+| 4 | **Bikram Pal** |
+| 5 | **Saikat Mahara** |
+| 6 | **Mayukh Paul** |
 
 ---
 
-# 🚀 Project Vision
+## 📄 License
 
-Our vision is to build a reliable and scalable tourist safety ecosystem that enables authorities to maintain better awareness of registered tourists and respond quickly to potential safety incidents.
-
-Instead of relying solely on manual reporting after a tourist goes missing, the proposed system aims to support a **proactive, centralized, and technology-driven approach to tourist safety and incident response**.
-
----
+This project is created for **Smart India Hackathon (SIH 2026)** prototype submission. All rights reserved.

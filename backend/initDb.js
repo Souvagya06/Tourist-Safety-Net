@@ -67,6 +67,7 @@ async function initializeDatabase() {
 
                 FOREIGN KEY (tourist_id)
                     REFERENCES tourists(tourist_id)
+                    ON DELETE CASCADE
             )
         `);
 
@@ -89,6 +90,7 @@ async function initializeDatabase() {
 
                 FOREIGN KEY (tourist_id)
                     REFERENCES tourists(tourist_id)
+                    ON DELETE CASCADE
             )
         `);
 
@@ -115,6 +117,7 @@ async function initializeDatabase() {
 
                 FOREIGN KEY (tourist_id)
                     REFERENCES tourists(tourist_id)
+                    ON DELETE SET NULL
             )
         `);
 

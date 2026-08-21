@@ -149,15 +149,33 @@ router.delete("/:tourist_id", async (req, res) => {
         }
         const name = existing.rows[0].full_name;
 
+        // 1. Set tourist_id = NULL in activities so history records remain denormalized without FK violations
+        await db.execute({
+            sql: "UPDATE activities SET tourist_id = NULL WHERE tourist_id = ?",
+            args: [tourist_id],
+        });
+
+        // 2. Remove related records in location_history and incidents
+        await db.execute({
+            sql: "DELETE FROM location_history WHERE tourist_id = ?",
+            args: [tourist_id],
+        });
+        await db.execute({
+            sql: "DELETE FROM incidents WHERE tourist_id = ?",
+            args: [tourist_id],
+        });
+
+        // 3. Delete from tourists table
         await db.execute({
             sql: "DELETE FROM tourists WHERE tourist_id = ?",
             args: [tourist_id],
         });
 
+        // 4. Log removal activity with null tourist_id (since tourist row is removed)
         await db.execute({
             sql: `INSERT INTO activities (tourist_id, tourist_name, activity_type, description)
                   VALUES (?, ?, ?, ?)`,
-            args: [tourist_id, name, "REMOVED", `${name} removed from monitoring.`],
+            args: [null, name, "REMOVED", `${name} removed from monitoring.`],
         });
 
         res.json({ success: true });

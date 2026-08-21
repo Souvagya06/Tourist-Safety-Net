@@ -671,6 +671,8 @@
   document.getElementById("detailDeleteBtn").addEventListener("click", function () {
     var t = tourists.find(function (x) { return x.tourist_id === selectedTouristId; });
     if (!t) return;
+    if (!confirm("Are you sure you want to delete tourist " + t.full_name + " (" + t.tourist_id + ")?")) return;
+
     var idToDelete = t.tourist_id;
 
     apiDelete("/api/tourists/" + encodeURIComponent(idToDelete))
@@ -689,7 +691,7 @@
       })
       .catch(function (err) {
         console.error(err);
-        alert("Could not delete this tourist. Please try again.");
+        alert("Could not delete this tourist: " + (err.message || "Please try again."));
       });
   });
 

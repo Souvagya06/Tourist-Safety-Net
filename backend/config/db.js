@@ -9,15 +9,15 @@
 // etc.) let me know and I'll adjust this file and the query calls in the
 // route files to match that library's API instead.
 
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
 const { createClient } = require("@libsql/client");
 
 if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
     throw new Error(
         "Missing TURSO_DATABASE_URL or TURSO_AUTH_TOKEN. " +
-        "Check that backend/.env exists, sits next to where you run `node`, " +
-        "and has no quotes around the values."
+        "Check that backend/.env exists and has valid credentials."
     );
 }
 

@@ -3,7 +3,7 @@
 <html class="light scroll-smooth" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>TouristSafe - Smart Tourist Safety Platform</title>
+<title>Safetour - Smart Tourist Safety Platform</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -112,6 +112,7 @@
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
     </style>
+<link href="./css/style.css" rel="stylesheet"/>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen">
 <!-- Top Navigation Bar -->
@@ -120,7 +121,7 @@
 <!-- Branding -->
 <div class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed flex items-center gap-2">
 <span class="material-symbols-outlined filled text-primary">security</span>
-                TouristSafe
+                Safetour
             </div>
 <!-- Navigation Links -->
 <div class="hidden md:flex gap-6 items-center h-full" data-nav-links>
@@ -153,7 +154,7 @@
                     A centralized safety monitoring and incident response platform that helps authorities register tourists, monitor their locations, detect entry into high-risk zones, and respond faster to potential emergencies.
                 </p>
 <div class="flex flex-wrap gap-4 pt-sm">
-<a class="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-on-primary-fixed transition-colors flex items-center gap-2" href="#">
+<a class="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-on-primary-fixed transition-colors flex items-center gap-2" href="./dashboard.html">
                         Open Authority Dashboard
                         <span class="material-symbols-outlined text-[18px]">dashboard</span>
 </a>
@@ -176,41 +177,12 @@
 </div>
 </div>
 </header>
-<!-- Statistics Section -->
-<section class="py-xl px-grid-margin max-w-7xl mx-auto bg-surface-container-low rounded-xl mb-xl border border-outline/10">
-<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
-<!-- Stat Card 1 -->
-<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-outline/10 shadow-sm">
-<span class="material-symbols-outlined text-primary-container text-[24px]">groups</span>
-<h3 class="font-headline-md text-headline-md text-primary mt-2">1,250+</h3>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Registered Tourists</p>
-</div>
-<!-- Stat Card 2 -->
-<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-t-[3px] border-t-primary-fixed border-outline/10 shadow-sm">
-<span class="material-symbols-outlined text-primary-fixed text-[24px] filled">check_circle</span>
-<h3 class="font-headline-md text-headline-md text-primary mt-2">98%</h3>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Currently Safe</p>
-</div>
-<!-- Stat Card 3 -->
-<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-outline/10 shadow-sm">
-<span class="material-symbols-outlined text-on-secondary-container text-[24px]">schedule</span>
-<h3 class="font-headline-md text-headline-md text-primary mt-2">24/7</h3>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Monitoring Active</p>
-</div>
-<!-- Stat Card 4 -->
-<div class="flex flex-col gap-1 p-md bg-surface-container-lowest rounded-lg border border-outline/10 shadow-sm">
-<span class="material-symbols-outlined text-on-secondary-container text-[24px]">flash_on</span>
-<h3 class="font-headline-md text-headline-md text-primary mt-2">&lt; 5 min</h3>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Incident Awareness</p>
-</div>
-</div>
-</section>
 <!-- How It Works Section -->
 <section id="how-it-works" class="scroll-mt-20 py-[72px] px-grid-margin max-w-7xl mx-auto" data-section="how-it-works">
 <div class="max-w-2xl mb-xl">
 <p class="font-label-md text-label-md text-on-surface-variant uppercase">How it works</p>
 <h2 class="font-headline-md text-headline-md text-on-background mt-2">A clear path from arrival to assistance.</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant mt-3">TouristSafe connects registration, live location awareness, and rapid response in one coordinated workflow.</p>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-3">Safetour connects registration, live location awareness, and rapid response in one coordinated workflow.</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
 <article class="p-lg bg-surface-container-low rounded-lg border border-outline/10">
@@ -249,9 +221,9 @@
 <!-- About Section -->
 <section id="about" class="scroll-mt-20 py-[72px] px-grid-margin max-w-7xl mx-auto" data-section="about">
 <div class="max-w-3xl">
-<p class="font-label-md text-label-md text-on-surface-variant uppercase">About TouristSafe</p>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">About Safetour</p>
 <h2 class="font-headline-md text-headline-md text-on-background mt-2">Technology that keeps human response at the center.</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant mt-4">TouristSafe is a smart safety platform for destinations that want to welcome visitors with confidence. It brings tourism teams and authorities together around one shared view of risk, location, and response.</p>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-4">Tourist Safety is a smart safety platform for destinations that want to welcome visitors with confidence. It brings tourism teams and authorities together around one shared view of risk, location, and response.</p>
 </div>
 </section>
 <!-- Footer -->
@@ -259,12 +231,11 @@
 <div class="flex flex-col md:flex-row justify-between items-center px-grid-margin py-xl gap-lg w-full max-w-7xl mx-auto">
 <div class="flex flex-col items-center md:items-start gap-2">
 <span class="text-body-lg font-body-lg font-bold text-primary flex items-center gap-2">
-<span class="material-symbols-outlined filled">security</span> TouristSafe
+<span class="material-symbols-outlined filled">security</span> Safetour
                 </span>
-<span class="font-body-md text-body-md text-on-surface-variant">© 2026 TouristSafe | Smart India Hackathon 2026</span>
+<span class="font-body-md text-body-md text-on-surface-variant">© 2026 Safetour</span>
 </div>
 <div class="flex flex-wrap gap-4 justify-center md:justify-end">
-<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline transition-all" href="#">SIH25002 - Problem Statement</a>
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline transition-all" href="#">Privacy Policy</a>
 <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline transition-all" href="#">Security Protocol</a>
 </div>

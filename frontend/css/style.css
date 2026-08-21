@@ -1,0 +1,178 @@
+html {
+	font-size: 16px;
+}
+
+body {
+	font-size: 1rem;
+	line-height: 1.6;
+}
+
+nav {
+	height: 80px !important;
+}
+
+nav > div {
+	height: 80px !important;
+	max-width: 1440px !important;
+	padding-inline: clamp(24px, 5vw, 64px) !important;
+}
+
+nav .text-title-lg {
+	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+}
+
+nav [data-nav-links] {
+	gap: clamp(24px, 3vw, 44px);
+}
+
+nav .nav-link {
+	font-size: 1rem !important;
+	line-height: 1.5rem !important;
+}
+
+nav > div > div:last-child a {
+	font-size: 0.875rem !important;
+	line-height: 1.25rem !important;
+	padding: 0.75rem 1.25rem !important;
+}
+
+#home,
+#how-it-works,
+#about {
+	max-width: 1440px !important;
+	padding-inline: clamp(24px, 5vw, 64px) !important;
+}
+
+#home {
+	padding-top: 168px !important;
+	padding-bottom: 96px !important;
+}
+
+#home > div {
+	gap: clamp(40px, 6vw, 80px);
+}
+
+#home h1 {
+	font-size: clamp(2.75rem, 5vw, 4.5rem) !important;
+	line-height: 1.08 !important;
+}
+
+#home > div > div:first-child > p {
+	max-width: 40rem;
+	font-size: 1.125rem !important;
+	line-height: 1.75rem !important;
+}
+
+#home > div > div:first-child > div:last-child a {
+	font-size: 0.875rem !important;
+	line-height: 1.25rem !important;
+	padding: 1rem 1.5rem !important;
+}
+
+#home > div > div:nth-child(2) {
+	min-height: 500px;
+}
+
+#how-it-works,
+#about {
+	padding-top: 96px !important;
+	padding-bottom: 96px !important;
+}
+
+#features {
+	padding-top: 96px !important;
+	padding-bottom: 96px !important;
+}
+
+#features > div {
+	max-width: 1440px !important;
+	padding-inline: clamp(24px, 5vw, 64px) !important;
+}
+
+#how-it-works h2,
+#features h2,
+#about h2 {
+	font-size: clamp(2rem, 3.5vw, 2.75rem) !important;
+	line-height: 1.2 !important;
+}
+
+#how-it-works > div:first-child,
+#features > div > div:first-child,
+#about > div {
+	max-width: 46rem;
+}
+
+#how-it-works > div:first-child > p:last-child,
+#features > div > div:first-child > p:last-child,
+#about > div > p:last-child {
+	font-size: 1.125rem !important;
+	line-height: 1.75rem !important;
+}
+
+#how-it-works article,
+#features > div > div:last-child > div {
+	padding: 2rem !important;
+}
+
+#how-it-works article h3,
+#features > div > div:last-child h3 {
+	font-size: 1.25rem !important;
+	line-height: 1.75rem !important;
+}
+
+#how-it-works article p,
+#features > div > div:last-child p {
+	font-size: 1rem !important;
+	line-height: 1.6rem !important;
+}
+
+footer > div {
+	max-width: 1440px !important;
+	padding-inline: clamp(24px, 5vw, 64px) !important;
+	padding-top: 3rem !important;
+	padding-bottom: 3rem !important;
+}
+
+footer .text-body-lg {
+	font-size: 1.25rem !important;
+}
+
+footer .text-body-md,
+footer a {
+	font-size: 0.875rem !important;
+}
+
+@media (max-width: 767px) {
+	nav {
+		height: 68px !important;
+	}
+
+	nav > div {
+		height: 68px !important;
+	}
+
+	nav > div > div:last-child a {
+		padding: 0.625rem 0.75rem !important;
+	}
+
+	#home {
+		padding-top: 116px !important;
+		padding-bottom: 64px !important;
+	}
+
+	#home h1 {
+		font-size: 2.75rem !important;
+	}
+
+	#home > div > div:nth-child(2) {
+		min-height: 340px;
+	}
+
+	#how-it-works,
+	#features,
+	#about {
+		padding-top: 64px !important;
+		padding-bottom: 64px !important;
+	}
+}

@@ -269,6 +269,19 @@
 <!-- Leaflet Map Container -->
 <div id="map" class="w-full h-full z-10 bg-[#f8fafc]"></div>
 
+<!-- Operator Location Badge Overlay -->
+<div class="absolute top-4 left-4 z-[500] pointer-events-auto bg-white/95 dark:bg-on-primary-fixed/95 backdrop-blur-md border border-outline-variant/30 rounded-xl px-3 py-2 shadow-md flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-sky-600 text-[20px]">location_on</span>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/70">Operator Base</span>
+<span class="text-body-md font-bold text-on-primary-fixed dark:text-primary leading-none" id="operatorLocationBadgeText">Newtown, Kolkata</span>
+</div>
+<button id="openLocationModalBtn" class="ml-2 bg-primary/10 hover:bg-primary/20 text-primary px-2.5 py-1 rounded-lg text-label-md font-bold transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">edit_location</span>
+<span>Change</span>
+</button>
+</div>
+
 <!-- Map Controls overlay (+ / - zoom and locate) -->
 <div class="absolute top-4 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
 <button id="zoomInBtn" title="Zoom In (+)" class="w-9 h-9 bg-surface-container-lowest/90 backdrop-blur-sm border border-outline-variant/40 rounded-lg shadow-md flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
@@ -277,7 +290,10 @@
 <button id="zoomOutBtn" title="Zoom Out (-)" class="w-9 h-9 bg-surface-container-lowest/90 backdrop-blur-sm border border-outline-variant/40 rounded-lg shadow-md flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
 <span class="material-symbols-outlined text-[22px]">remove</span>
 </button>
-<button id="locateUserBtn" title="Locate My Position & Zoom In" class="w-9 h-9 bg-primary text-on-primary border border-primary-fixed/40 rounded-lg shadow-md flex items-center justify-center hover:bg-on-primary-fixed-variant transition-colors mt-1">
+<button id="openLocationModalBtn2" title="Set / Change Operator Location (Newtown / Custom)" class="w-9 h-9 bg-primary text-on-primary border border-primary-fixed/40 rounded-lg shadow-md flex items-center justify-center hover:bg-on-primary-fixed-variant transition-colors mt-1">
+<span class="material-symbols-outlined text-[22px]">pin_drop</span>
+</button>
+<button id="locateUserBtn" title="Zoom to Current Operator Base" class="w-9 h-9 bg-surface-container-lowest/90 backdrop-blur-sm border border-outline-variant/40 rounded-lg shadow-md flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
 <span class="material-symbols-outlined text-[22px]">my_location</span>
 </button>
 </div>
@@ -460,6 +476,81 @@
 <button class="text-on-error/80 hover:text-on-error transition-colors" id="closeSecurityAlertBtn">
 <span class="material-symbols-outlined text-[20px]">close</span>
 </button>
+<!-- Change Operator Location Modal -->
+<div id="locationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] hidden items-center justify-center p-4">
+  <div class="bg-surface-container-lowest dark:bg-on-primary-fixed border border-outline-variant/30 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+    <div class="bg-primary text-on-primary p-4 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[24px]">pin_drop</span>
+        <h3 class="text-title-lg font-bold">Set Operator Base Location</h3>
+      </div>
+      <button id="closeLocationModalBtn" class="text-on-primary/70 hover:text-on-primary transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    
+    <div class="p-5 flex flex-col gap-4 text-on-surface">
+      <p class="text-body-md text-on-surface-variant">
+        Select or search your current operator base location. This controls your 30 km monitoring radius & danger zone search area.
+      </p>
+
+      <!-- Quick Presets -->
+      <div class="flex flex-col gap-2">
+        <span class="text-label-md font-bold uppercase tracking-wider text-on-surface-variant/70">Quick Presets</span>
+        <div class="flex flex-col gap-2">
+          <button id="presetNewtownBtn" type="button" class="w-full bg-primary-container text-on-primary hover:bg-primary-container/80 border border-outline-variant/30 px-4 py-2.5 rounded-xl text-body-md font-bold transition-all flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-sky-400 text-[20px]">school</span>
+              <span>Newtown, Kolkata (College Base)</span>
+            </div>
+            <span class="text-label-md font-normal bg-sky-500/20 px-2 py-0.5 rounded text-sky-300">Default</span>
+          </button>
+          <button id="presetGpsBtn" type="button" class="w-full bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 px-4 py-2.5 rounded-xl text-body-md font-medium transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]">my_location</span>
+            <span>Fetch Device GPS Location</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="relative flex py-1 items-center">
+        <div class="flex-grow border-t border-outline-variant/20"></div>
+        <span class="flex-shrink mx-3 text-label-md text-on-surface-variant/60 uppercase font-bold">or search location</span>
+        <div class="flex-grow border-t border-outline-variant/20"></div>
+      </div>
+
+      <!-- Location Search Form -->
+      <form id="locationSearchForm" class="flex flex-col gap-2">
+        <div class="relative">
+          <input type="text" id="customLocationInput" placeholder="Type city or locality (e.g. Newtown, Rajarhat)..." required
+                 class="w-full bg-surface-container border border-outline-variant/40 rounded-xl pl-9 pr-3 py-2 text-body-md focus:ring-2 focus:ring-primary text-on-surface" />
+          <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+        </div>
+        <button type="submit" id="searchLocationSubmitBtn" class="bg-primary text-on-primary font-bold px-4 py-2.5 rounded-xl text-body-md hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-1 shadow-md">
+          <span class="material-symbols-outlined text-[18px]">search</span>
+          <span>Find & Set Location</span>
+        </button>
+        <p id="locationSearchError" class="text-error text-label-md hidden font-semibold"></p>
+      </form>
+
+      <div class="relative flex py-1 items-center">
+        <div class="flex-grow border-t border-outline-variant/20"></div>
+        <span class="flex-shrink mx-3 text-label-md text-on-surface-variant/60 uppercase font-bold">or pick on map</span>
+        <div class="flex-grow border-t border-outline-variant/20"></div>
+      </div>
+
+      <button id="pickOnMapBtn" type="button" class="w-full border-2 border-dashed border-primary/50 text-primary font-bold px-4 py-2.5 rounded-xl text-body-md hover:bg-primary/10 transition-colors flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-[20px]">ads_click</span>
+        <span>Click Anywhere on Map to Set Base</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Map Click Mode Banner -->
+<div id="mapPickerBanner" class="fixed top-20 left-1/2 -translate-x-1/2 z-[1500] bg-primary text-on-primary px-5 py-3 rounded-full shadow-2xl border-2 border-sky-400 flex items-center gap-3 hidden animate-bounce">
+  <span class="material-symbols-outlined text-sky-400 text-[24px]">ads_click</span>
+  <span class="text-body-lg font-bold">Click anywhere on the map to set your base location!</span>
+  <button id="cancelMapPickerBtn" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full text-label-md font-bold transition-colors">Cancel</button>
 </div>
 
 <!-- Application Main Script -->
@@ -474,11 +565,52 @@
   var riskZones = []; // [{ id, locality_name, latitude, longitude, radius_km, circleLayer }]
 
   // Leaflet Map & Layer References
+  var DEFAULT_NEWTOWN = [22.5867, 88.4754]; // Newtown, Kolkata
+  var DEFAULT_NEWTOWN_NAME = "Newtown, Kolkata";
+
   var map = null;
-  var userLocation = [28.6139, 77.2090]; // Default New Delhi coordinates
+  var userLocation = DEFAULT_NEWTOWN;
+  var userLocationName = DEFAULT_NEWTOWN_NAME;
   var userMarker = null;
   var userCoverageCircle = null;
   var touristMarkersMap = {}; // { tourist_id: L.marker }
+  var isPickingMapLocation = false;
+
+  function loadStoredOperatorLocation() {
+    var storedLat = localStorage.getItem("safetour_operator_lat");
+    var storedLng = localStorage.getItem("safetour_operator_lng");
+    var storedName = localStorage.getItem("safetour_operator_name");
+
+    if (storedLat && storedLng) {
+      var lat = parseFloat(storedLat);
+      var lng = parseFloat(storedLng);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        userLocation = [lat, lng];
+        userLocationName = storedName || "Custom Base Location";
+        return;
+      }
+    }
+    // Default to Newtown, Kolkata
+    userLocation = DEFAULT_NEWTOWN;
+    userLocationName = DEFAULT_NEWTOWN_NAME;
+    localStorage.setItem("safetour_operator_lat", DEFAULT_NEWTOWN[0]);
+    localStorage.setItem("safetour_operator_lng", DEFAULT_NEWTOWN[1]);
+    localStorage.setItem("safetour_operator_name", DEFAULT_NEWTOWN_NAME);
+  }
+
+  function setOperatorLocation(lat, lng, name, saveToStorage) {
+    userLocation = [lat, lng];
+    userLocationName = name || (lat.toFixed(4) + ", " + lng.toFixed(4));
+    if (saveToStorage !== false) {
+      localStorage.setItem("safetour_operator_lat", lat);
+      localStorage.setItem("safetour_operator_lng", lng);
+      localStorage.setItem("safetour_operator_name", userLocationName);
+    }
+    renderUserCoverage(userLocation);
+    if (map) {
+      map.flyTo(userLocation, 13, { duration: 1.2 });
+    }
+  }
 
   /* ---------- API Helpers ---------- */
   function apiGet(url) {
@@ -586,6 +718,8 @@
 
   /* ---------- Map Initialization ---------- */
   function initMap() {
+    loadStoredOperatorLocation();
+
     map = L.map("map", {
       zoomControl: false,
       attributionControl: false
@@ -608,32 +742,29 @@
       locateUserAndZoom();
     });
 
-    // Detect browser current location & create 30 km diameter (15 km radius) area
-    locateUserAndZoom();
+    // Map click handler for pick location mode
+    map.on("click", function (e) {
+      if (isPickingMapLocation) {
+        isPickingMapLocation = false;
+        document.getElementById("mapPickerBanner").classList.add("hidden");
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+        var pickedName = "Selected Base (" + lat.toFixed(3) + ", " + lng.toFixed(3) + ")";
+        setOperatorLocation(lat, lng, pickedName, true);
+        showSecurityAlert("Operator Base Location set to map point!");
+      }
+    });
+
+    renderUserCoverage(userLocation);
   }
 
   function locateUserAndZoom() {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        function (pos) {
-          userLocation = [pos.coords.latitude, pos.coords.longitude];
-          renderUserCoverage(userLocation);
-          map.flyTo(userLocation, 13, { duration: 1.2 });
-        },
-        function (err) {
-          console.warn("Geolocation fallback used:", err);
-          renderUserCoverage(userLocation);
-          map.flyTo(userLocation, 12);
-        },
-        { enableHighAccuracy: true, timeout: 7000 }
-      );
-    } else {
-      renderUserCoverage(userLocation);
-      map.flyTo(userLocation, 12);
-    }
+    renderUserCoverage(userLocation);
+    if (map) map.flyTo(userLocation, 13, { duration: 1.2 });
   }
 
   function renderUserCoverage(latlng) {
+    if (!map) return;
     if (userMarker) map.removeLayer(userMarker);
     if (userCoverageCircle) map.removeLayer(userCoverageCircle);
 
@@ -646,7 +777,7 @@
     });
 
     userMarker = L.marker(latlng, { icon: userIcon }).addTo(map);
-    userMarker.bindTooltip("<b>Your Location</b> (Software Operator)", { permanent: false, direction: "top" });
+    userMarker.bindTooltip("<b>Your Location: " + escapeHtml(userLocationName) + "</b> (Software Operator)", { permanent: false, direction: "top" });
 
     // 30 km diameter = 15 km radius (15,000 meters)
     userCoverageCircle = L.circle(latlng, {
@@ -658,8 +789,123 @@
       dashArray: "6, 6"
     }).addTo(map);
 
-    userCoverageCircle.bindTooltip("<b>30 km Active Coverage Area</b>", { permanent: false, direction: "bottom" });
+    userCoverageCircle.bindTooltip("<b>30 km Active Coverage Area</b> (" + escapeHtml(userLocationName) + ")", { permanent: false, direction: "bottom" });
+
+    var badgeText = document.getElementById("operatorLocationBadgeText");
+    if (badgeText) badgeText.textContent = userLocationName;
   }
+
+  /* ---------- Location Modal Controls ---------- */
+  var locModal = document.getElementById("locationModal");
+  function openLocationModal() {
+    document.getElementById("locationSearchError").classList.add("hidden");
+    document.getElementById("customLocationInput").value = "";
+    locModal.classList.remove("hidden");
+    locModal.classList.add("flex");
+  }
+  function closeLocationModal() {
+    locModal.classList.add("hidden");
+    locModal.classList.remove("flex");
+  }
+
+  var btnOpenLoc1 = document.getElementById("openLocationModalBtn");
+  if (btnOpenLoc1) btnOpenLoc1.addEventListener("click", openLocationModal);
+  var btnOpenLoc2 = document.getElementById("openLocationModalBtn2");
+  if (btnOpenLoc2) btnOpenLoc2.addEventListener("click", openLocationModal);
+  document.getElementById("closeLocationModalBtn").addEventListener("click", closeLocationModal);
+  locModal.addEventListener("click", function (e) { if (e.target === locModal) closeLocationModal(); });
+
+  // Preset: Newtown Kolkata
+  document.getElementById("presetNewtownBtn").addEventListener("click", function () {
+    setOperatorLocation(DEFAULT_NEWTOWN[0], DEFAULT_NEWTOWN[1], DEFAULT_NEWTOWN_NAME, true);
+    closeLocationModal();
+    showSecurityAlert("Operator Base Location set to Newtown, Kolkata");
+  });
+
+  // Preset: Device GPS Location
+  document.getElementById("presetGpsBtn").addEventListener("click", function () {
+    var errEl = document.getElementById("locationSearchError");
+    errEl.classList.add("hidden");
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          var lat = pos.coords.latitude;
+          var lng = pos.coords.longitude;
+          fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lng)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              var locName = data.address
+                ? (data.address.suburb || data.address.town || data.address.city || data.address.county || "Device GPS Location")
+                : "Device GPS Location";
+              setOperatorLocation(lat, lng, locName + " (GPS)", true);
+              closeLocationModal();
+              showSecurityAlert("Operator Base updated to Device GPS: " + locName);
+            })
+            .catch(function () {
+              setOperatorLocation(lat, lng, "Device GPS Location", true);
+              closeLocationModal();
+            });
+        },
+        function (err) {
+          errEl.textContent = "Could not fetch GPS location: " + (err.message || "Permission denied");
+          errEl.classList.remove("hidden");
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    } else {
+      errEl.textContent = "Geolocation is not supported by your browser.";
+      errEl.classList.remove("hidden");
+    }
+  });
+
+  // Location Search Form
+  document.getElementById("locationSearchForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var query = document.getElementById("customLocationInput").value.trim();
+    var errEl = document.getElementById("locationSearchError");
+    var submitBtn = document.getElementById("searchLocationSubmitBtn");
+    if (!query) return;
+
+    errEl.classList.add("hidden");
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Searching...';
+
+    fetch("https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(query))
+      .then(function (r) { return r.json(); })
+      .then(function (results) {
+        if (!results || results.length === 0) {
+          throw new Error("Location '" + query + "' not found. Try another city or locality.");
+        }
+        var top = results[0];
+        var lat = parseFloat(top.lat);
+        var lon = parseFloat(top.lon);
+        var shortName = top.display_name ? top.display_name.split(",")[0] : query;
+
+        setOperatorLocation(lat, lon, shortName, true);
+        closeLocationModal();
+        showSecurityAlert("Operator Base Location set to " + shortName);
+      })
+      .catch(function (err) {
+        errEl.textContent = err.message || "Failed to search location.";
+        errEl.classList.remove("hidden");
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">search</span> <span>Find & Set Location</span>';
+      });
+  });
+
+  // Pick on Map Mode
+  var mapPickerBanner = document.getElementById("mapPickerBanner");
+  document.getElementById("pickOnMapBtn").addEventListener("click", function () {
+    closeLocationModal();
+    isPickingMapLocation = true;
+    mapPickerBanner.classList.remove("hidden");
+  });
+  document.getElementById("cancelMapPickerBtn").addEventListener("click", function () {
+    isPickingMapLocation = false;
+    mapPickerBanner.classList.add("hidden");
+  });
 
   /* ---------- Risk Zones Management ---------- */
   function loadRiskZones() {
